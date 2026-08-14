@@ -597,6 +597,27 @@ div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nt
   padding-top: 10px !important;
   padding-bottom: 50px !important;
 }
+
+/* Desktop and up (1024px+) restore large sizes */
+@media (min-width: 1024px) {
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: 121px !important;
+    line-height: 100.08px !important;
+    padding-top: 10px !important;
+    padding-bottom: 50px !important;
+  }
+
+  div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: 115px !important;
+    line-height: 100px !important;
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
+  }
+
+  div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > p:nth-of-type(1) {
+    margin-left: 239px !important;
+  }
+}
 div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) {
 
 }
@@ -722,6 +743,93 @@ div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > ma
   margin-left: 239px !important;
   padding-top: 6px !important;
   padding-bottom: 8px !important;
+}
+
+/* ========================================================
+   MOBILE RESPONSIVE OVERRIDES — All breakpoints ≤ 1024px
+   ======================================================== */
+
+/* Thermal hero h1: override 121px to responsive clamp on mobile/tablet */
+@media (max-width: 1023px) {
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: clamp(36px, 9vw, 90px) !important;
+    line-height: 1.05 !important;
+    padding-top: 8px !important;
+    padding-bottom: 24px !important;
+  }
+
+  /* Thermal hero card padding */
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+
+  /* AQI hero h1: override 115px to responsive on mobile/tablet */
+  div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: clamp(36px, 9vw, 90px) !important;
+    line-height: 1.05 !important;
+    padding-top: 8px !important;
+    padding-bottom: 16px !important;
+  }
+
+  /* AQI p margin-left: 239px causes overflow on mobile */
+  div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > p:nth-of-type(1) {
+    margin-left: 0px !important;
+    text-align: center !important;
+    padding-left: 0px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* MainAppPage search section — switch from rounded-full pill to rounded card on mobile */
+  div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) {
+    border-radius: 2rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+    height: auto !important;
+  }
+
+  /* App page search — title left-aligns on xl only; center on mobile */
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > h2:nth-of-type(1) {
+    font-size: clamp(18px, 5vw, 27px) !important;
+    text-align: center !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Urdu RTL: Thermal hero heading */
+  body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: clamp(calc(36px * 1.18), 9vw, calc(90px * 1.18)) !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Urdu RTL: AQI hero heading */
+  body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    font-size: clamp(calc(36px * 1.18), 9vw, calc(90px * 1.18)) !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Urdu RTL: Thermal app page section h2 */
+  body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > h2:nth-of-type(1) {
+    font-size: clamp(calc(18px * 1.18), 5vw, calc(27px * 1.18)) !important;
+  }
+
+  /* Remove fixed-width expanded search margins on smaller screens */
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1):not(.grid),
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1):not(.grid) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1),
+  div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
 }
 div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) {
   color: #52b72c !important;
@@ -1322,6 +1430,13 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > main#main-co
 div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
   line-height: 104.08px !important;
   padding-bottom: 47px !important;
+}
+
+@media (max-width: 1023px) {
+  div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
+    line-height: 1.05 !important;
+    padding-bottom: 20px !important;
+  }
 }
 
 div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > nav#navbar-thermal-landing:nth-of-type(1) {

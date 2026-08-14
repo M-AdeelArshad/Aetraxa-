@@ -110,7 +110,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="max-w-6xl mx-auto px-6 pt-32 pb-24 flex flex-col gap-12 relative z-10"
+      className="max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-32 pb-16 sm:pb-24 flex flex-col gap-8 sm:gap-12 relative z-10"
     >
       {/* Toast Notification */}
       <AnimatePresence>
@@ -130,23 +130,23 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
       {/* Header Banner - PRESERVED EXACTLY AS IS */}
       <motion.div 
         variants={cardItemVariants}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
         <div className="flex items-center gap-4 md:gap-6 relative z-10 w-full justify-between">
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-6">
             <motion.button 
               whileHover={{ scale: 1.1, backgroundColor: 'rgba(242,246,249,0.1)' }}
               whileTap={{ scale: 0.9 }}
               onClick={onBack}
-              className="p-3.5 md:p-4 rounded-2xl bg-[#f2f6f9]/5 border border-[#687075]/20 text-[#f2f6f9] transition-all flex-shrink-0 cursor-pointer focus:outline-none"
+              className="p-3 md:p-4 rounded-2xl bg-[#f2f6f9]/5 border border-[#687075]/20 text-[#f2f6f9] transition-all flex-shrink-0 cursor-pointer focus:outline-none"
               aria-label="Go back to dashboard"
             >
-              <ArrowLeftIcon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+              <ArrowLeftIcon className="w-4 h-4 md:w-6 md:h-6" aria-hidden="true" />
             </motion.button>
             <div className="space-y-1 text-left">
-              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[#f2f6f9] leading-none">{t('tacticalSettings')}</h2>
-              <p className="text-xs md:text-xl uppercase font-black tracking-widest text-[#687075] mt-2">{t('personalSafetyProfile')}</p>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter text-[#f2f6f9] leading-none">{t('tacticalSettings')}</h2>
+              <p className="text-[10px] sm:text-xs md:text-base uppercase font-black tracking-widest text-[#687075] mt-1 md:mt-2">{t('personalSafetyProfile')}</p>
             </div>
           </div>
           
@@ -157,12 +157,12 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
       </motion.div>
 
       {/* Redesigned setting contents - Gorgeous, spacious layout matching Main Landing Page style */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-12 text-left">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-8 sm:gap-12 text-left">
         
         {/* SECTION 1: EXPOSURE & OCCUPATION PROFILE */}
         <motion.div 
           variants={cardItemVariants}
-          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-8 group"
+          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 md:gap-8 group"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/3 blur-[80px] rounded-full -mr-32 -mt-32 transition-all duration-700 pointer-events-none group-hover:bg-[#f2f6f9]/6" />
           
@@ -173,7 +173,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
                 <UserIcon className="w-6 h-6 text-[#687075]" />
               </div>
               <div>
-                <h3 className="text-2xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
+                <h3 className="text-xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
                   {language === 'ur' ? 'گرمی اور سورج کے خطرات کے لیے کردار' : '01 • Exposure Profile'}
                 </h3>
                 <p className="text-xs md:text-sm text-[#687075] font-semibold mt-1 leading-relaxed">
@@ -239,7 +239,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
         {/* SECTION 2: BIOMETRIC VULNERABILITIES & ALERTMETRIC TRIGGERS */}
         <motion.div 
           variants={cardItemVariants}
-          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-8 group"
+          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 md:gap-8 group"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/3 blur-[80px] rounded-full -mr-32 -mt-32 transition-all duration-700 pointer-events-none group-hover:bg-[#f2f6f9]/6" />
 
@@ -250,7 +250,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
                 <ShieldAlertIcon className="w-6 h-6 text-[#687075]" />
               </div>
               <div>
-                <h3 className="text-2xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
+                <h3 className="text-xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
                   {language === 'ur' ? 'طبی و جینیاتی خطرات' : '02 • Vulnerability & Co-factors'}
                 </h3>
                 <p className="text-xs md:text-sm text-[#687075] font-semibold mt-1 leading-relaxed">
@@ -353,7 +353,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
         {/* SECTION 3: SYSTEM INTERFACE, LANG, AND ALERT TELEMETRY STYLES */}
         <motion.div 
           variants={cardItemVariants}
-          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-8 group"
+          className="bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 md:gap-8 group"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/3 blur-[80px] rounded-full -mr-32 -mt-32 transition-all duration-700 pointer-events-none group-hover:bg-[#f2f6f9]/6" />
 
@@ -364,7 +364,7 @@ export const SettingsPage = React.memo(({ profile, onSave, onBack }: SettingsPag
                 <SlidersIcon className="w-6 h-6 text-[#687075]" />
               </div>
               <div>
-                <h3 className="text-2xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
+                <h3 className="text-xl md:text-3xl font-black uppercase tracking-normal text-[#f2f6f9]">
                   {language === 'ur' ? 'سستم اور انٹرفیس' : '03 • Interface Calibration'}
                 </h3>
                 <p className="text-xs md:text-sm text-[#687075] font-semibold mt-1 leading-relaxed">

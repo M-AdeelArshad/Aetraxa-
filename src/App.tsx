@@ -2959,7 +2959,7 @@ const AssistantDrawer = ({ isOpen, onClose, messages, onSendMessage, isLoading, 
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             style={{ width: `${width}px`, maxWidth: '100vw' }}
-            className={`fixed top-0 right-0 h-full bg-black border-l border-white/10 z-[1100] shadow-2xl flex flex-col ${isResizing ? 'select-none' : ''}`}
+            className={`fixed top-0 right-0 h-full bg-black border-l border-white/10 z-[1100] shadow-2xl flex flex-col w-full sm:w-auto ${isResizing ? 'select-none' : ''}`}
           >
             {/* Resize Handle */}
             <div 
@@ -3276,7 +3276,7 @@ const ThermalHotspots = React.memo(() => {
 
   return (
     <div className="w-[calc(100%-2rem)] max-w-7xl mt-12 mx-auto">
-      <div className="bg-[#000000]/60 rounded-[3.5rem] py-12 md:py-16 px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
+      <div className="bg-[#000000]/60 rounded-[2rem] md:rounded-[3.5rem] py-8 md:py-16 px-4 sm:px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
       <div className="flex flex-col items-start mb-10 w-full">
         <div className="flex items-center gap-3 mb-3">
           <FlameIcon className="w-5 h-5 text-primary-accent" />
@@ -3381,7 +3381,7 @@ const DidYouKnow = React.memo(() => {
 
   return (
     <div className="w-[calc(100%-2rem)] max-w-7xl mt-32 mb-20 mx-auto">
-      <div className="bg-[#000000]/60 rounded-[3.5rem] py-12 md:py-16 px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
+      <div className="bg-[#000000]/60 rounded-[2rem] md:rounded-[3.5rem] py-8 md:py-16 px-4 sm:px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
       <div className="flex flex-col items-start mb-14 w-full">
         <div className="flex items-center gap-3 mb-3">
           <SparklesIcon className="w-5 h-5 text-primary-accent animate-pulse" />
@@ -3652,7 +3652,7 @@ const AqiHotspots = React.memo(() => {
 
   return (
     <div className="w-[calc(100%-2rem)] max-w-7xl mt-12 mx-auto">
-      <div className="bg-[#000000]/60 rounded-[3.5rem] py-12 md:py-16 px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
+      <div className="bg-[#000000]/60 rounded-[2rem] md:rounded-[3.5rem] py-8 md:py-16 px-4 sm:px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
       <div className="flex flex-col items-start mb-10 w-full text-left">
         <div className="flex items-center gap-3 mb-3">
           <WindIcon className="w-5 h-5 text-[#52b72c]" />
@@ -3769,7 +3769,7 @@ const AqiDidYouKnow = React.memo(() => {
 
   return (
     <div className="w-[calc(100%-2rem)] max-w-7xl mt-32 mb-20 mx-auto">
-      <div className="bg-[#000000]/60 rounded-[3.5rem] py-12 md:py-16 px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
+      <div className="bg-[#000000]/60 rounded-[2rem] md:rounded-[3.5rem] py-8 md:py-16 px-4 sm:px-6 md:px-12 backdrop-blur-xl border border-[#687075]/20">
       <div className="flex flex-col items-start mb-14 w-full">
         <div className="flex items-center gap-3 mb-3">
           <SparklesIcon className="w-5 h-5 text-[#52b72c] animate-pulse" />
@@ -3892,7 +3892,7 @@ function LandingPage({
                 transition: { staggerChildren: 0.1, delayChildren: 0.05 }
               }
             }}
-            className="w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[3.5rem] p-8 md:p-12 lg:p-16 shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
+            className="w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-8 md:p-12 lg:p-16 shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
           >
             <motion.div 
               variants={{ 
@@ -3903,11 +3903,10 @@ function LandingPage({
                   transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } 
                 } 
               }}
-              className="text-center mb-12 w-full"
+              className="text-center mb-8 sm:mb-12 w-full"
             >
               <h1 
-                style={{ fontSize: '75px', lineHeight: '1.1' }} 
-                className="font-display font-black tracking-tight text-[#f2f6f9] mb-6 overflow-hidden"
+                className="font-display font-black tracking-tight text-[#f2f6f9] mb-6 overflow-hidden text-[clamp(32px,8vw,75px)] leading-[1.1]"
               >
                 <motion.span 
                   variants={{ hidden: { y: "45%", opacity: 0 }, visible: { y: 0, opacity: 1, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
@@ -3953,22 +3952,22 @@ function LandingPage({
                   boxShadow: "0 30px 60px -15px rgba(221, 97, 31, 0.3)",
                   borderColor: "rgba(221, 97, 31, 0.5)"
                 }}
-                className="group relative flex flex-col bg-[#050507]/40 hover:bg-[#050507]/85 border border-[#687075]/25 rounded-[2.5rem] p-8 md:p-10 transition-all duration-500 overflow-hidden text-left rtl:text-right cursor-pointer"
+                className="group relative flex flex-col bg-[#050507]/40 hover:bg-[#050507]/85 border border-[#687075]/25 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 transition-all duration-500 overflow-hidden text-left rtl:text-right cursor-pointer"
                 onClick={() => handleToolSelect('thermal')}
               >
                 <div className="absolute top-0 ltr:right-0 rtl:left-0 ltr:left-auto rtl:right-auto p-8 opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-500">
                   <SunIcon className="w-32 h-32 text-[#f2f6f9] group-hover:text-[#dd611f] transition-colors duration-500" />
                 </div>
                 
-                <div className="w-16 h-16 rounded-2xl bg-[#f2f6f9]/5 group-hover:bg-[#dd611f]/10 flex items-center justify-center border border-[#687075]/30 group-hover:border-[#dd611f] mb-8 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 self-start">
-                  <SunIcon className="w-8 h-8 text-[#f2f6f9] group-hover:text-[#dd611f] transition-all duration-500" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#f2f6f9]/5 group-hover:bg-[#dd611f]/10 flex items-center justify-center border border-[#687075]/30 group-hover:border-[#dd611f] mb-5 sm:mb-8 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 self-start">
+                  <SunIcon className="w-6 h-6 sm:w-8 sm:h-8 text-[#f2f6f9] group-hover:text-[#dd611f] transition-all duration-500" />
                 </div>
                 
-                <h2 className="text-3xl font-black text-[#f2f6f9] uppercase tracking-tight mb-4 relative z-10 group-hover:text-[#dd611f] transition-colors duration-300">
+                <h2 className="text-2xl sm:text-3xl font-black text-[#f2f6f9] uppercase tracking-tight mb-3 md:mb-4 relative z-10 group-hover:text-[#dd611f] transition-colors duration-300">
                   {t('thermalHazard')}
                 </h2>
                 
-                <p className="text-[#687075] font-medium leading-relaxed mb-10 flex-grow relative z-10 text-base lg:text-lg max-w-[90%] group-hover:text-[#f2f6f9]/80 transition-colors duration-300">
+                <p className="text-[#687075] font-medium leading-relaxed mb-6 md:mb-10 flex-grow relative z-10 text-sm sm:text-base lg:text-lg max-w-[90%] group-hover:text-[#f2f6f9]/80 transition-colors duration-300">
                   {t('thermalHazardDesc')}
                 </p>
                 
@@ -3998,22 +3997,22 @@ function LandingPage({
                   boxShadow: "0 30px 60px -15px rgba(82, 183, 44, 0.3)",
                   borderColor: "rgba(82, 183, 44, 0.5)"
                 }}
-                className="group relative flex flex-col bg-[#050507]/40 hover:bg-[#050507]/85 border border-[#687075]/25 rounded-[2.5rem] p-8 md:p-10 transition-all duration-500 overflow-hidden text-left rtl:text-right cursor-pointer"
+                className="group relative flex flex-col bg-[#050507]/40 hover:bg-[#050507]/85 border border-[#687075]/25 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 transition-all duration-500 overflow-hidden text-left rtl:text-right cursor-pointer"
                 onClick={() => handleToolSelect('aqi')}
               >
                 <div className="absolute top-0 ltr:right-0 rtl:left-0 ltr:left-auto rtl:right-auto p-8 opacity-10 group-hover:opacity-20 group-hover:scale-105 transition-all duration-500">
                   <WindIcon className="w-32 h-32 text-[#f2f6f9] group-hover:text-[#52b72c] transition-colors duration-500" />
                 </div>
                 
-                <div className="w-16 h-16 rounded-2xl bg-[#f2f6f9]/5 group-hover:bg-[#0b150b] flex items-center justify-center border border-[#687075]/30 group-hover:border-[#52b72c] mb-8 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12 self-start">
-                  <WindIcon className="w-8 h-8 text-[#f2f6f9] group-hover:text-[#52b72c] transition-all duration-500" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#f2f6f9]/5 group-hover:bg-[#0b150b] flex items-center justify-center border border-[#687075]/30 group-hover:border-[#52b72c] mb-5 sm:mb-8 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12 self-start">
+                  <WindIcon className="w-6 h-6 sm:w-8 sm:h-8 text-[#f2f6f9] group-hover:text-[#52b72c] transition-all duration-500" />
                 </div>
                 
-                <h2 className="text-3xl font-black text-[#f2f6f9] uppercase tracking-tight mb-4 relative z-10 group-hover:text-[#52b72c] transition-colors duration-300">
+                <h2 className="text-2xl sm:text-3xl font-black text-[#f2f6f9] uppercase tracking-tight mb-3 md:mb-4 relative z-10 group-hover:text-[#52b72c] transition-colors duration-300">
                   {t('airQuality')}
                 </h2>
                 
-                <p className="text-[#687075] font-medium leading-relaxed mb-10 flex-grow relative z-10 text-base lg:text-lg max-w-[90%] group-hover:text-[#f2f6f9]/80 transition-colors duration-300">
+                <p className="text-[#687075] font-medium leading-relaxed mb-6 md:mb-10 flex-grow relative z-10 text-sm sm:text-base lg:text-lg max-w-[90%] group-hover:text-[#f2f6f9]/80 transition-colors duration-300">
                   {t('airQualityDesc')}
                 </p>
                 
@@ -4048,12 +4047,11 @@ function LandingPage({
                 } 
               }
             }}
-            className="w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center p-8 md:p-12 lg:p-16 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[3.5rem] shadow-[0_30px_100px_rgba(5,5,7,0.8)] pb-16"
+            className="w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center p-6 sm:p-8 md:p-12 lg:p-16 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2.5rem] sm:rounded-[3.5rem] shadow-[0_30px_100px_rgba(5,5,7,0.8)] pb-10 sm:pb-16"
           >
             <div className="text-center mb-12 w-full animate-fade-in">
               <h2 
-                style={{ fontSize: '35px' }} 
-                className="font-display font-black tracking-tight text-[#f2f6f9] uppercase mb-4"
+                className="font-display font-black tracking-tight text-[#f2f6f9] uppercase mb-4 text-[clamp(22px,5vw,35px)]"
               >
                 {language === 'ur' ? (
                   <>
@@ -4214,7 +4212,7 @@ function LandingPage({
         <div className={`relative w-full min-h-screen flex flex-col items-center justify-start md:justify-center pt-24 pb-16 md:py-24 px-4 sm:px-6 gap-12 transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}>
           <motion.div 
             variants={heroCardStaggerVariants}
-            className={`thermal-hero-card w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#000000]/60 backdrop-blur-xl border border-[#687075]/20 rounded-[3.5rem] p-8 md:p-12 lg:p-16 relative transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}
+            className={`thermal-hero-card w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#000000]/60 backdrop-blur-xl border border-[#687075]/20 rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-8 md:p-12 lg:p-16 relative transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}
           >
             {/* System Active Badge */}
             <motion.div 
@@ -4228,8 +4226,8 @@ function LandingPage({
             {/* Heading */}
             <motion.h1 
               variants={cardItemVariants}
-              className="thermal-hero-title text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6.5rem] font-display font-black leading-[1.02] tracking-tight text-[#fff2d0] mb-8 uppercase text-center max-w-5xl select-none"
-              style={{ fontSize: '115px', lineHeight: '100px', paddingBottom: '20px' }}
+              className="thermal-hero-title font-display font-black leading-[1.02] tracking-tight text-[#fff2d0] mb-8 uppercase text-center max-w-5xl select-none text-[clamp(36px,9vw,115px)]"
+              style={{ paddingBottom: '20px' }}
             >
               {language === 'en' ? (
                 <>
@@ -4263,50 +4261,55 @@ function LandingPage({
               variants={cardItemVariants}
               className="w-full flex flex-col gap-6 max-w-4xl"
             >
-              <div className={`thermal-search-bar w-full border border-primary-accent/20 bg-black/60 backdrop-blur-xl rounded-full h-14 md:h-16 flex flex-row items-center justify-between pl-4 pr-2 gap-2 relative transition-all duration-200 ${dropdownOpen ? 'z-[2010] shadow-[0_0_50px_rgba(221,97,31,0.2)]' : 'z-[140]'}`}>
-                <div className="flex-1 min-w-0">
-                  <SearchableDropdown 
-                    options={COUNTRIES.map(c => c.name)}
-                    value={selectedCountry}
-                    onChange={(val) => {
-                      setSelectedCountry(val);
-                      setSelectedCity('');
-                      setSelectedCityData(null);
-                    }}
-                    placeholder={t('country')}
-                    variant="borderless"
-                    onOpenChange={setCountryOpen}
-                  />
+              {/* Mobile stacked layout, desktop pill row */}
+              <div className={`thermal-search-bar w-full border border-primary-accent/20 bg-black/60 backdrop-blur-xl transition-all duration-200 ${dropdownOpen ? 'z-[2010] shadow-[0_0_50px_rgba(221,97,31,0.2)]' : 'z-[140]'}
+                flex flex-col sm:flex-row items-stretch sm:items-center rounded-3xl sm:rounded-full
+                gap-2 p-3 sm:p-0 sm:h-14 md:h-16 sm:pl-4 sm:pr-2 sm:gap-2 relative`}>
+                <div className="flex flex-row items-center gap-2 sm:contents">
+                  <div className="flex-1 min-w-0">
+                    <SearchableDropdown 
+                      options={COUNTRIES.map(c => c.name)}
+                      value={selectedCountry}
+                      onChange={(val) => {
+                        setSelectedCountry(val);
+                        setSelectedCity('');
+                        setSelectedCityData(null);
+                      }}
+                      placeholder={t('country')}
+                      variant="borderless"
+                      onOpenChange={setCountryOpen}
+                    />
+                  </div>
+                  
+                  <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0 hidden sm:block" />
+                  
+                  <div className="flex-1 min-w-0">
+                    <SearchableDropdown 
+                      options={dynamicCities}
+                      value={selectedCity}
+                      onChange={setSelectedCity}
+                      onOptionSelect={setSelectedCityData}
+                      placeholder={t('city')}
+                      disabled={false}
+                      onSearchQueryChange={handleCitySearch}
+                      variant="borderless"
+                      onOpenChange={setCityOpen}
+                    />
+                  </div>
+                  
+                  <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0 hidden sm:block" />
+                  
+                  <motion.button
+                    onClick={onLocateMe}
+                    whileHover={{ scale: 1.05, color: '#d6501f' }}
+                    whileTap={{ scale: 0.95 }}
+                    disabled={isLocating}
+                    className="p-2 text-[#687075] disabled:opacity-30 flex-shrink-0 cursor-pointer transition-colors focus:outline-none"
+                    title="Locate me"
+                  >
+                    <NavigationIcon className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
+                  </motion.button>
                 </div>
-                
-                <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0" />
-                
-                <div className="flex-1 min-w-0">
-                  <SearchableDropdown 
-                    options={dynamicCities}
-                    value={selectedCity}
-                    onChange={setSelectedCity}
-                    onOptionSelect={setSelectedCityData}
-                    placeholder={t('city')}
-                    disabled={false}
-                    onSearchQueryChange={handleCitySearch}
-                    variant="borderless"
-                    onOpenChange={setCityOpen}
-                  />
-                </div>
-                
-                <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0" />
-                
-                <motion.button
-                  onClick={onLocateMe}
-                  whileHover={{ scale: 1.05, color: '#d6501f' }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={isLocating}
-                  className="p-2 text-[#687075] disabled:opacity-30 flex-shrink-0 cursor-pointer transition-colors focus:outline-none"
-                  title="Locate me"
-                >
-                  <NavigationIcon className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
-                </motion.button>
                 
                 <motion.button 
                   whileHover={(!selectedCity || loading) ? undefined : { scale: 1.02 }}
@@ -4317,7 +4320,7 @@ function LandingPage({
                     }
                   }}
                   disabled={!selectedCity || loading}
-                  className={`whitespace-nowrap px-6 h-10 md:h-12 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center ${
+                  className={`whitespace-nowrap px-6 h-12 sm:h-10 md:h-12 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center w-full sm:w-auto flex-shrink-0 ${
                     !selectedCity || loading
                       ? 'bg-transparent text-[#687075]/40 border border-[#687075]/15 cursor-not-allowed opacity-50' 
                       : 'bg-primary-accent text-black hover:bg-primary-accent/90 shadow-[0_0_15px_rgba(214,80,31,0.25)] border-none cursor-pointer'
@@ -4354,7 +4357,7 @@ function LandingPage({
         <div className={`relative w-full min-h-screen flex flex-col items-center justify-start md:justify-center pt-24 pb-16 md:py-24 px-4 sm:px-6 gap-12 transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}>
           <motion.div 
             variants={heroCardStaggerVariants}
-            className={`w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#000000]/60 backdrop-blur-xl border border-[#687075]/20 rounded-[3.5rem] p-8 md:p-12 lg:p-16 relative transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}
+            className={`w-[calc(100%-2rem)] max-w-7xl mx-auto flex flex-col items-center bg-[#000000]/60 backdrop-blur-xl border border-[#687075]/20 rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-8 md:p-12 lg:p-16 relative transition-all duration-200 ${dropdownOpen ? 'z-50' : 'z-10'}`}
           >
             {/* System Active Badge */}
             <motion.div 
@@ -4368,7 +4371,7 @@ function LandingPage({
             {/* Heading */}
             <motion.h1 
               variants={cardItemVariants}
-              className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] xl:text-[6.5rem] font-display font-black leading-[1.02] tracking-tight text-[#fff2d0] mb-8 uppercase text-center max-w-5xl select-none"
+              className="font-display font-black leading-[1.02] tracking-tight text-[#fff2d0] mb-8 uppercase text-center max-w-5xl select-none text-[clamp(36px,9vw,115px)]"
             >
               {language === 'en' ? (
                 <>
@@ -4401,52 +4404,57 @@ function LandingPage({
               variants={cardItemVariants}
               className="w-full flex flex-col gap-6 max-w-4xl"
             >
-              <div className={`w-full border border-[#52b72c]/20 bg-[#020402]/75 backdrop-blur-xl rounded-full h-14 md:h-16 flex flex-row items-center justify-between pl-4 pr-2 gap-2 relative transition-all duration-200 ${dropdownOpen ? 'z-[2010] shadow-[0_0_50px_rgba(82,183,44,0.2)]' : 'z-[140]'}`}>
-                <div className="flex-1 min-w-0">
-                  <SearchableDropdown 
-                    options={COUNTRIES.map(c => c.name)}
-                    value={selectedCountry}
-                    onChange={(val) => {
-                      setSelectedCountry(val);
-                      setSelectedCity('');
-                      setSelectedCityData(null);
-                    }}
-                    placeholder={t('country')}
-                    variant="borderless"
-                    onOpenChange={setCountryOpen}
-                    theme="aqi"
-                  />
+              {/* Mobile stacked layout, desktop pill row */}
+              <div className={`w-full border border-[#52b72c]/20 bg-[#020402]/75 backdrop-blur-xl transition-all duration-200 ${dropdownOpen ? 'z-[2010] shadow-[0_0_50px_rgba(82,183,44,0.2)]' : 'z-[140]'}
+                flex flex-col sm:flex-row items-stretch sm:items-center rounded-3xl sm:rounded-full
+                gap-2 p-3 sm:p-0 sm:h-14 md:h-16 sm:pl-4 sm:pr-2 sm:gap-2 relative`}>
+                <div className="flex flex-row items-center gap-2 sm:contents">
+                  <div className="flex-1 min-w-0">
+                    <SearchableDropdown 
+                      options={COUNTRIES.map(c => c.name)}
+                      value={selectedCountry}
+                      onChange={(val) => {
+                        setSelectedCountry(val);
+                        setSelectedCity('');
+                        setSelectedCityData(null);
+                      }}
+                      placeholder={t('country')}
+                      variant="borderless"
+                      onOpenChange={setCountryOpen}
+                      theme="aqi"
+                    />
+                  </div>
+                  
+                  <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0 hidden sm:block" />
+                  
+                  <div className="flex-1 min-w-0">
+                    <SearchableDropdown 
+                      options={dynamicCities}
+                      value={selectedCity}
+                      onChange={setSelectedCity}
+                      onOptionSelect={setSelectedCityData}
+                      placeholder={t('city')}
+                      disabled={false}
+                      onSearchQueryChange={handleCitySearch}
+                      variant="borderless"
+                      onOpenChange={setCityOpen}
+                      theme="aqi"
+                    />
+                  </div>
+                  
+                  <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0 hidden sm:block" />
+                  
+                  <motion.button
+                    onClick={onLocateMe}
+                    whileHover={{ scale: 1.05, color: '#52b72c' }}
+                    whileTap={{ scale: 0.95 }}
+                    disabled={isLocating}
+                    className="p-2 text-[#687075] disabled:opacity-30 flex-shrink-0 cursor-pointer transition-colors focus:outline-none"
+                    title="Locate me"
+                  >
+                    <NavigationIcon className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
+                  </motion.button>
                 </div>
-                
-                <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0" />
-                
-                <div className="flex-1 min-w-0">
-                  <SearchableDropdown 
-                    options={dynamicCities}
-                    value={selectedCity}
-                    onChange={setSelectedCity}
-                    onOptionSelect={setSelectedCityData}
-                    placeholder={t('city')}
-                    disabled={false}
-                    onSearchQueryChange={handleCitySearch}
-                    variant="borderless"
-                    onOpenChange={setCityOpen}
-                    theme="aqi"
-                  />
-                </div>
-                
-                <ChevronRightIcon className="w-4 h-4 text-[#687075] flex-shrink-0" />
-                
-                <motion.button
-                  onClick={onLocateMe}
-                  whileHover={{ scale: 1.05, color: '#52b72c' }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={isLocating}
-                  className="p-2 text-[#687075] disabled:opacity-30 flex-shrink-0 cursor-pointer transition-colors focus:outline-none"
-                  title="Locate me"
-                >
-                  <NavigationIcon className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
-                </motion.button>
                 
                 <motion.button 
                   whileHover={!selectedCity || loading ? {} : { scale: 1.02 }}
@@ -4457,7 +4465,7 @@ function LandingPage({
                     }
                   }}
                   disabled={!selectedCity || loading}
-                  className={`whitespace-nowrap px-6 h-10 md:h-12 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center ${
+                  className={`whitespace-nowrap px-6 h-12 sm:h-10 md:h-12 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center w-full sm:w-auto flex-shrink-0 ${
                     !selectedCity || loading
                       ? 'bg-transparent text-[#687075]/40 border border-[#687075]/15 cursor-not-allowed opacity-50' 
                       : 'bg-[#52b72c] text-black hover:bg-[#52b72c]/90 shadow-[0_0_15px_rgba(82,183,44,0.25)] border-none cursor-pointer'
@@ -5081,7 +5089,7 @@ const MainAppPage = React.memo(({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.3 }}
-          className="flex-grow flex flex-col items-center justify-center py-32 gap-8 bg-[#020402]/75 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 aqi-empty-state-container"
+          className="flex-grow flex flex-col items-center justify-center py-16 sm:py-24 md:py-32 gap-8 bg-[#020402]/75 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 aqi-empty-state-container"
         >
           <div className="relative">
             <div className={`absolute inset-0 blur-3xl rounded-full ${activeTool === 'aqi' ? 'bg-[#52b72c]/20' : 'bg-primary-accent/20'}`} />
@@ -5107,11 +5115,11 @@ const MainAppPage = React.memo(({
           {/* Hero Section: Gauge and Primary Metrics */}
           <motion.section 
             variants={cardItemVariants}
-            className="lg:col-span-12 xl:col-span-8 bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 relative overflow-hidden flex flex-col items-center"
+            className="lg:col-span-12 xl:col-span-8 bg-[#000000]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 relative overflow-hidden flex flex-col items-center"
           >
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary-accent/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none" />
             
-            <div className="w-full flex justify-between items-start mb-12 relative z-10">
+            <div className="w-full flex justify-between items-start mb-8 sm:mb-12 relative z-10">
                <div className="flex items-center gap-4 bg-primary-accent/10 border border-primary-accent/20 px-4 py-2 rounded-full">
                  <div className="w-2 h-2 rounded-full bg-primary-accent animate-pulse" />
                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-accent">{t('liveAtmosphere' as any)}</span>
@@ -5132,34 +5140,34 @@ const MainAppPage = React.memo(({
                </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-12">
-              <div className="flex flex-col items-center md:items-start gap-8 flex-1">
-                <div className="space-y-1">
+            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-8 md:gap-12">
+              <div className="flex flex-col items-center md:items-start gap-6 md:gap-8 flex-1 w-full">
+                <div className="space-y-1 text-center md:text-left">
                   <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">{t('heatIndexLabel')}</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none">
+                  <div className="flex items-baseline gap-2 justify-center md:justify-start">
+                    <span className="text-6xl sm:text-8xl md:text-9xl font-black text-white tracking-tighter leading-none">
                       {Math.floor(formatTemp(weather.current.heatIndex, tempUnit))}°
                     </span>
                   </div>
                 </div>
 
-                <div className="flex gap-12">
+                <div className="flex gap-8 sm:gap-12 justify-center md:justify-start">
                   <div className="space-y-1">
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">{t('temperatureLabel')}</span>
-                    <p className="text-4xl font-black text-white/60 tracking-tight">
-                      {formatTemp(weather.current.temp, tempUnit).toFixed(1)}<span className="text-xl text-white/30">{tempUnitStr}</span>
+                    <p className="text-2xl sm:text-3xl md:text-4xl font-black text-white/60 tracking-tight">
+                      {formatTemp(weather.current.temp, tempUnit).toFixed(1)}<span className="text-base sm:text-xl text-white/30">{tempUnitStr}</span>
                     </p>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">{t('statusLabel' as any)}</span>
-                    <p className="text-xl font-black uppercase tracking-widest" style={{ color: currentLevel?.color }}>
+                    <p className="text-base sm:text-xl font-black uppercase tracking-widest" style={{ color: currentLevel?.color }}>
                       {t(`status${currentLevel?.label}` as any) || currentLevel?.label}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="relative flex-shrink-0 w-full max-w-[400px]">
+              <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[360px] md:max-w-[400px] mx-auto md:mx-0">
                 <RadialDangerGauge 
                   heatIndex={weather.current.heatIndex} 
                   currentLevel={currentLevel} 
@@ -5174,7 +5182,7 @@ const MainAppPage = React.memo(({
             variants={cardItemVariants}
             className="lg:col-span-12 xl:col-span-4 flex flex-col gap-8"
           >
-            <div className="bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-6 md:p-8 flex flex-col gap-8 flex-grow shadow-2xl relative overflow-hidden group">
+            <div className="bg-[#000000]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 flex-grow shadow-2xl relative overflow-hidden group">
               {/* Tactical Grid Backdrop */}
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
                    style={{ backgroundImage: `radial-gradient(var(--color-primary-light) 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
@@ -5289,7 +5297,7 @@ const MainAppPage = React.memo(({
           {/* Metrics row */}
           <motion.div 
             variants={cardItemVariants}
-            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/60 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-8 md:p-12 shadow-[0_0_40px_rgba(0,0,0,0.3)]"
+            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/60 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 shadow-[0_0_40px_rgba(0,0,0,0.3)]"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-16 relative z-10">
               <MetricCard 
@@ -5318,13 +5326,13 @@ const MainAppPage = React.memo(({
           
           <motion.div 
             variants={cardItemVariants}
-            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 h-[450px] flex flex-col"
+            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/80 backdrop-blur-xl rounded-[2.5rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 h-[320px] sm:h-[400px] md:h-[450px] flex flex-col"
           >
-            <div className="flex items-center gap-4 mb-8 flex-shrink-0">
-              <div className="p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20">
-                <ActivityIcon className="w-5 h-5 text-orange-500" />
+            <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8 flex-shrink-0">
+              <div className="p-2.5 sm:p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20">
+                <ActivityIcon className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
               </div>
-              <h3 style={{ textAlign: 'left', fontSize: '16px', fontStyle: 'normal' }} className="uppercase tracking-[0.4em] font-normal text-[#fff2d0]">{t('thermalTrajectory')}</h3>
+              <h3 style={{ textAlign: 'left', fontSize: '14px', fontStyle: 'normal' }} className="uppercase tracking-[0.3em] sm:tracking-[0.4em] font-normal text-[#fff2d0]">{t('thermalTrajectory')}</h3>
             </div>
             <div className="flex-grow min-h-0 w-full">
                <ForecastChart data={weather.hourly} unit={tempUnit} />
@@ -5343,11 +5351,11 @@ const MainAppPage = React.memo(({
           {/* Hero Section: AQI Metrics & Gauge */}
           <motion.section 
             variants={cardItemVariants}
-            className="lg:col-span-12 xl:col-span-8 bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 relative overflow-hidden flex flex-col items-center"
+            className="lg:col-span-12 xl:col-span-8 bg-[#000000]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 relative overflow-hidden flex flex-col items-center"
           >
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#52b72c]/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none" />
             
-            <div className="w-full flex justify-between items-start mb-12 relative z-10">
+            <div className="w-full flex justify-between items-start mb-8 sm:mb-12 relative z-10">
                <div className="flex items-center gap-4 bg-[#52b72c]/10 border border-[#52b72c]/20 px-4 py-2 rounded-full">
                  <div className="w-2 h-2 rounded-full bg-[#52b72c] animate-pulse" />
                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#52b72c]">Atmospheric Surveillance</span>
@@ -5368,34 +5376,34 @@ const MainAppPage = React.memo(({
                </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-12 relative z-10 flex-grow">
-              <div className="flex flex-col items-center md:items-start gap-8 flex-1">
+            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-8 md:gap-12 relative z-10 flex-grow">
+              <div className="flex flex-col items-center md:items-start gap-6 md:gap-8 flex-1 w-full text-center md:text-left">
                 <div className="space-y-1">
                   <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Air Quality Index</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-8xl md:text-9xl font-black text-white tracking-tighter leading-none">
+                  <div className="flex items-baseline gap-2 justify-center md:justify-start">
+                    <span className="text-6xl sm:text-8xl md:text-9xl font-black text-white tracking-tighter leading-none">
                       {aqi.current.aqi}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex gap-12 flex-wrap sm:flex-nowrap font-sans">
+                <div className="flex gap-8 sm:gap-12 flex-wrap justify-center md:justify-start font-sans">
                   <div className="space-y-1">
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">PM2.5 / PM10 Level</span>
-                    <p className="text-2xl font-black text-white/60 tracking-tight">
-                      {aqi.current.pm2_5} <span className="text-sm text-white/35">/ {aqi.current.pm10} μg/m³</span>
+                    <p className="text-xl sm:text-2xl font-black text-white/60 tracking-tight">
+                      {aqi.current.pm2_5} <span className="text-xs sm:text-sm text-white/35">/ {aqi.current.pm10} μg/m³</span>
                     </p>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Node Status</span>
-                    <p className="text-xl font-black uppercase tracking-widest" style={{ color: getAqiDangerLevel(aqi.current.aqi).color }}>
+                    <p className="text-base sm:text-xl font-black uppercase tracking-widest" style={{ color: getAqiDangerLevel(aqi.current.aqi).color }}>
                       {getAqiDangerLevel(aqi.current.aqi).label}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="relative flex-shrink-0 w-full max-w-[400px]">
+              <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[360px] md:max-w-[400px] mx-auto md:mx-0">
                 <RadialAqiGauge 
                   aqiValue={aqi.current.aqi} 
                   currentLevel={getAqiDangerLevel(aqi.current.aqi)} 
@@ -5409,7 +5417,7 @@ const MainAppPage = React.memo(({
             variants={cardItemVariants}
             className="lg:col-span-12 xl:col-span-4 flex flex-col gap-6"
           >
-            <div className="bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-6 md:p-8 flex flex-col gap-8 flex-grow shadow-2xl relative overflow-hidden group">
+            <div className="bg-[#000000]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-6 md:p-8 flex flex-col gap-6 sm:gap-8 flex-grow shadow-2xl relative overflow-hidden group">
               {/* Tactical Grid Backdrop */}
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
                    style={{ backgroundImage: 'radial-gradient(#52b72c 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
@@ -5520,13 +5528,13 @@ const MainAppPage = React.memo(({
           {/* Trajectory Chart Row */}
           <motion.div 
             variants={cardItemVariants}
-            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 h-[450px] flex flex-col"
+            className="col-span-1 lg:col-span-12 xl:col-span-12 bg-[#000000]/80 backdrop-blur-xl rounded-[2.5rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-8 md:p-12 h-[320px] sm:h-[400px] md:h-[450px] flex flex-col"
           >
-            <div className="flex items-center gap-4 mb-8 flex-shrink-0">
-               <div className="p-3 rounded-2xl bg-[#52b72c]/10 border border-[#52b72c]/20">
+            <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-8 flex-shrink-0">
+               <div className="p-2.5 sm:p-3 rounded-2xl bg-[#52b72c]/10 border border-[#52b72c]/20">
                  <ActivityIcon className="w-5 h-5 text-[#52b72c]" />
                </div>
-               <h3 style={{ textAlign: 'left', fontSize: '16px', fontStyle: 'normal' }} className="uppercase tracking-[0.4em] font-normal text-[#fff2d0]">Atmospheric Trajectory</h3>
+               <h3 style={{ textAlign: 'left', fontSize: '14px', fontStyle: 'normal' }} className="uppercase tracking-[0.3em] sm:tracking-[0.4em] font-normal text-[#fff2d0]">Atmospheric Trajectory</h3>
             </div>
             <div className="flex-grow min-h-0 w-full">
                <AqiForecastChart data={aqi.hourly} />
