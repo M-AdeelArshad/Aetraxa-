@@ -124,28 +124,28 @@ export const AboutPage = React.memo(({ onBack }: AboutPageProps) => {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="max-w-6xl mx-auto px-6 pt-32 pb-24 flex flex-col gap-12 relative z-10"
+      className="max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-32 pb-16 sm:pb-24 flex flex-col gap-8 sm:gap-12 relative z-10"
     >
       {/* Header Banner - Matches Settings page header style identically */}
       <motion.div 
         variants={cardItemVariants}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)]"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
         <div className="flex items-center gap-4 md:gap-6 relative z-10 w-full justify-between">
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-6">
             <motion.button 
               whileHover={{ scale: 1.1, backgroundColor: 'rgba(242,246,249,0.1)' }}
               whileTap={{ scale: 0.9 }}
               onClick={onBack}
-              className="p-3.5 md:p-4 rounded-2xl bg-[#f2f6f9]/5 border border-[#687075]/20 text-[#f2f6f9] transition-all flex-shrink-0 cursor-pointer focus:outline-none"
+              className="p-3 md:p-4 rounded-2xl bg-[#f2f6f9]/5 border border-[#687075]/20 text-[#f2f6f9] transition-all flex-shrink-0 cursor-pointer focus:outline-none"
               aria-label="Go back"
             >
-              <ArrowLeftIcon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
+              <ArrowLeftIcon className="w-4 h-4 md:w-6 md:h-6" aria-hidden="true" />
             </motion.button>
             <div className="space-y-1 text-left">
-              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-[#f2f6f9] leading-none">{t('aboutTitle')}</h2>
-              <p className="text-xs md:text-xl uppercase font-black tracking-widest text-[#687075] mt-2">{t('aboutSubtitle')}</p>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tighter text-[#f2f6f9] leading-none">{t('aboutTitle')}</h2>
+              <p className="text-[10px] sm:text-xs md:text-base uppercase font-black tracking-widest text-[#687075] mt-1 md:mt-2">{t('aboutSubtitle')}</p>
             </div>
           </div>
           
@@ -156,12 +156,12 @@ export const AboutPage = React.memo(({ onBack }: AboutPageProps) => {
       </motion.div>
 
       {/* Grid containing Overview & Twin Instruments */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 text-left">
         
         {/* Card 1: Platform Overview & Mission - Spans 7 columns on desktop */}
         <motion.div 
           variants={cardItemVariants}
-          className="lg:col-span-7 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 group"
+          className="lg:col-span-7 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-5 md:gap-6 group"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/3 blur-[80px] rounded-full -mr-32 -mt-32 transition-all duration-700 pointer-events-none group-hover:bg-[#f2f6f9]/6" />
           
@@ -196,7 +196,7 @@ export const AboutPage = React.memo(({ onBack }: AboutPageProps) => {
         {/* Card 2: Dual Instruments Focus (The Two Tools) - Spans 5 columns on desktop */}
         <motion.div 
           variants={cardItemVariants}
-          className="lg:col-span-5 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 group"
+          className="lg:col-span-5 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-5 md:gap-6 group"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f2f6f9]/3 blur-[80px] rounded-full -mr-32 -mt-32 transition-all duration-700 pointer-events-none group-hover:bg-[#f2f6f9]/6" />
           
@@ -249,7 +249,7 @@ export const AboutPage = React.memo(({ onBack }: AboutPageProps) => {
         {/* Card 3: Deep Technical Breakdown - Spans 12 columns */}
         <motion.div 
           variants={cardItemVariants}
-          className="lg:col-span-12 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-8 group"
+          className="lg:col-span-12 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6 md:gap-8 group"
         >
           <div className="absolute inset-0 opacity-[0.02] pointer-events-none" 
                style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--color-white) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
@@ -362,7 +362,7 @@ export const AboutPage = React.memo(({ onBack }: AboutPageProps) => {
         {/* Card 5: Step-by-Step User Instructions - Spans 12 columns */}
         <motion.div 
           variants={cardItemVariants}
-          className="lg:col-span-12 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-6"
+          className="lg:col-span-12 bg-[#050507]/75 backdrop-blur-lg border border-[#687075]/20 p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden shadow-[0_30px_100px_rgba(5,5,7,0.8)] flex flex-col gap-5 md:gap-6"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#687075]/20">
             <div className="flex items-center gap-4">

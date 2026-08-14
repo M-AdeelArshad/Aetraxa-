@@ -143,8 +143,8 @@ export const DetailedPollutantsBreakdown: React.FC<DetailedPollutantsBreakdownPr
   const isUrdu = language === 'ur';
 
   return (
-    <div className="w-full bg-[#000000]/80 backdrop-blur-xl rounded-[3.5rem] border border-[#687075]/20 p-6 sm:p-8 md:p-10 shadow-2xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/10">
+    <div className="w-full bg-[#000000]/80 backdrop-blur-xl rounded-[2rem] md:rounded-[3.5rem] border border-[#687075]/20 p-5 sm:p-6 md:p-10 shadow-2xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 mb-7 sm:mb-10 pb-5 sm:pb-6 border-b border-white/10">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-[#52b72c] animate-pulse shadow-[0_0_8px_rgba(82,183,44,0.6)]" />

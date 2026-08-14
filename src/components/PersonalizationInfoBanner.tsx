@@ -24,7 +24,7 @@ const PersonalizationInfoBanner: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-2xl bg-[#151515] border border-white/10 rounded-2xl p-4 shadow-xl z-50"
+          className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-[#151515] border border-white/10 rounded-2xl p-4 shadow-xl z-50"
         >
           <div className="flex items-center justify-between">
             <p className="text-sm text-white/80">
