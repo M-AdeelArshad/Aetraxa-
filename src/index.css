@@ -281,10 +281,10 @@
   body[dir="rtl"] .text-3xl { font-size: calc(1.875rem * 1.18) !important; }
   body[dir="rtl"] .text-4xl { font-size: calc(2.25rem * 1.18) !important; }
   body[dir="rtl"] .text-5xl { font-size: calc(3rem * 1.18) !important; }
-  body[dir="rtl"] .text-6xl { font-size: calc(3.75rem * 1.18) !important; }
-  body[dir="rtl"] .text-7xl { font-size: calc(4.5rem * 1.18) !important; }
-  body[dir="rtl"] .text-8xl { font-size: calc(6rem * 1.18) !important; }
-  body[dir="rtl"] .text-9xl { font-size: calc(8rem * 1.18) !important; }
+  body[dir="rtl"] .text-6xl { font-size: calc(3.75rem * 1.05) !important; }
+  body[dir="rtl"] .text-7xl { font-size: calc(4.5rem * 1.05) !important; }
+  body[dir="rtl"] .text-8xl { font-size: calc(6rem * 1.05) !important; }
+  body[dir="rtl"] .text-9xl { font-size: calc(8rem * 1.05) !important; }
 
   /* Responsive breakpoints scaling */
   body[dir="rtl"] .sm\:text-xs { font-size: calc(0.75rem * 1.18) !important; }
@@ -308,7 +308,8 @@
   body[dir="rtl"] .md\:text-4xl { font-size: calc(2.25rem * 1.18) !important; }
   body[dir="rtl"] .md\:text-5xl { font-size: calc(3rem * 1.18) !important; }
   body[dir="rtl"] .md\:text-6xl { font-size: calc(3.75rem * 1.18) !important; }
-  body[dir="rtl"] .md\:text-8xl { font-size: calc(6rem * 1.18) !important; }
+  body[dir="rtl"] .md\:text-8xl { font-size: calc(6rem * 1.1) !important; }
+  body[dir="rtl"] .md\:text-9xl { font-size: calc(8rem * 1.1) !important; }
 
   body[dir="rtl"] .lg\:text-xs { font-size: calc(0.75rem * 1.18) !important; }
   body[dir="rtl"] .lg\:text-sm { font-size: calc(0.875rem * 1.18) !important; }
@@ -358,8 +359,9 @@
   body[dir="rtl"] .text-\[64px\] { font-size: calc(64px * 1.18) !important; }
   body[dir="rtl"] .text-\[72px\] { font-size: calc(72px * 1.18) !important; }
   body[dir="rtl"] .text-\[80px\] { font-size: calc(80px * 1.18) !important; }
-  body[dir="rtl"] .text-\[121px\] { font-size: calc(121px * 1.18) !important; }
-  body[dir="rtl"] .text-\[115px\] { font-size: calc(115px * 1.18) !important; }
+  /* These giant headline classes are already handled by nth-of-type overrides; cap here instead of scaling up */
+  body[dir="rtl"] .text-\[121px\] { font-size: 100px !important; }
+  body[dir="rtl"] .text-\[115px\] { font-size: 96px !important; }
 
   /* Overrides for responsive custom/arbitrary texts */
   body[dir="rtl"] .sm\:text-\[10px\] { font-size: calc(10px * 1.18) !important; }
@@ -375,13 +377,14 @@
   body[dir="rtl"] .md\:text-\[7rem\] { font-size: calc(7rem * 1.18) !important; }
 
   /* Adjustments for custom css hardcoded font-sizes */
+  /* RTL Urdu: desktop hero h1 — cap at 100px to avoid excessive overflow */
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
-    font-size: calc(121px * 1.18) !important;
-    line-height: calc(100.08px * 1.18) !important;
+    font-size: 100px !important;
+    line-height: 1.1 !important;
   }
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
-    font-size: calc(115px * 1.18) !important;
-    line-height: calc(100px * 1.18) !important;
+    font-size: 96px !important;
+    line-height: 1.1 !important;
   }
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > h2:nth-of-type(1) {
     font-size: calc(27px * 1.18) !important;
@@ -799,21 +802,25 @@ div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > ma
     word-break: break-word !important;
   }
 
-  /* Urdu RTL: Thermal hero heading */
+  /* Urdu RTL: Thermal hero heading — cap at 68px max on mobile to avoid overflow */
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-landing.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
-    font-size: clamp(calc(36px * 1.18), 9vw, calc(90px * 1.18)) !important;
-    line-height: 1.2 !important;
+    font-size: clamp(28px, 7.5vw, 68px) !important;
+    line-height: 1.25 !important;
+    padding-top: 8px !important;
+    padding-bottom: 20px !important;
   }
 
-  /* Urdu RTL: AQI hero heading */
+  /* Urdu RTL: AQI hero heading — cap at 68px max on mobile */
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).theme-aqi > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > h1:nth-of-type(1) {
-    font-size: clamp(calc(36px * 1.18), 9vw, calc(90px * 1.18)) !important;
-    line-height: 1.2 !important;
+    font-size: clamp(28px, 7.5vw, 68px) !important;
+    line-height: 1.25 !important;
+    padding-top: 8px !important;
+    padding-bottom: 16px !important;
   }
 
   /* Urdu RTL: Thermal app page section h2 */
   body[dir="rtl"] div#root:nth-of-type(1) > div:nth-of-type(1).page-main.theme-thermal > div:nth-of-type(3) > main#main-content:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) > h2:nth-of-type(1) {
-    font-size: clamp(calc(18px * 1.18), 5vw, calc(27px * 1.18)) !important;
+    font-size: clamp(16px, 4vw, 26px) !important;
   }
 
   /* Remove fixed-width expanded search margins on smaller screens */

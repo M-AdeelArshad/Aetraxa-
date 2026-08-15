@@ -265,7 +265,7 @@ const NavbarMainLanding = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -284,7 +284,7 @@ const NavbarMainLanding = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -305,7 +305,7 @@ const NavbarMainLanding = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -517,7 +517,7 @@ const NavbarThermalLanding = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -536,7 +536,7 @@ const NavbarThermalLanding = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -557,7 +557,7 @@ const NavbarThermalLanding = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -589,29 +589,29 @@ const NavbarThermalLanding = ({
           {t('launchSystem')}
         </motion.button>
 
-        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#687075]/20 pr-2 sm:pr-3 mr-1">
+        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#dd611f]/30 pr-2 sm:pr-3 mr-1">
           <motion.button 
             onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
+            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#fff2d0] transition-all border border-[#dd611f]/30 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
           >
-            <GlobeIcon className="w-3 h-3 text-[#f2f6f9]" strokeWidth={2.5} />
+            <GlobeIcon className="w-3 h-3 text-[#dd611f]" strokeWidth={2.5} />
             {language === 'en' ? 'EN' : 'UR'}
           </motion.button>
 
           <motion.button 
             onClick={onOpenSettings}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center p-1.5 text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
+            className="flex items-center justify-center p-1.5 text-[#fff2d0] transition-all border border-[#dd611f]/30 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
             aria-label={t('tacticalSettings')}
           >
-            <SettingsIcon className="w-3.5 h-3.5 text-[#f2f6f9]" />
+            <SettingsIcon className="w-3.5 h-3.5 text-[#dd611f]" />
           </motion.button>
         </div>
 
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-1.5 sm:p-2 text-[#f2f6f9] focus:outline-none hover:bg-[#f2f6f9]/5 rounded-full transition-colors border border-transparent hover:border-[#687075]/20"
+          className="p-1.5 sm:p-2 text-[#fff2d0] focus:outline-none hover:bg-[#dd611f]/10 rounded-full transition-colors border border-transparent hover:border-[#dd611f]/30"
         >
           {isMenuOpen ? <CloseIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
         </button>
@@ -626,13 +626,6 @@ const NavbarThermalLanding = ({
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             className="absolute top-[calc(100%+10px)] right-0 w-56 sm:w-64 bg-[#050507]/95 backdrop-blur-xl border border-[#687075]/20 rounded-3xl p-4 flex flex-col gap-2 shadow-2xl xl:hidden overflow-hidden"
           >
-            <button 
-              onClick={() => { setIsMenuOpen(false); onStart(); }}
-              className="w-full px-4 py-3 text-xs font-black tracking-widest uppercase bg-primary-accent text-black rounded-2xl transition-all mb-2 text-center cursor-pointer"
-            >
-              {t('launchSystem')}
-            </button>
-
             <button 
               onClick={() => { setIsMenuOpen(false); onSectionChange('home'); }}
               className="w-full text-left px-4 py-3 text-xs font-bold tracking-widest uppercase text-[#f2f6f9] hover:text-[#f2f6f9] hover:bg-[#f2f6f9]/5 rounded-2xl transition-colors text-left"
@@ -796,7 +789,7 @@ const NavbarThermalApp = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -815,7 +808,7 @@ const NavbarThermalApp = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -836,7 +829,7 @@ const NavbarThermalApp = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -848,29 +841,29 @@ const NavbarThermalApp = ({
 
       {/* Mobile Inline Controls */}
       <div className="flex xl:hidden items-center gap-1 sm:gap-2">
-        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#687075]/20 pr-2 sm:pr-3 mr-1">
+        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#dd611f]/30 pr-2 sm:pr-3 mr-1">
           <motion.button 
             onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
+            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#fff2d0] transition-all border border-[#dd611f]/30 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
           >
-            <GlobeIcon className="w-3 h-3 text-[#f2f6f9]" strokeWidth={2.5} />
+            <GlobeIcon className="w-3 h-3 text-[#dd611f]" strokeWidth={2.5} />
             {language === 'en' ? 'EN' : 'UR'}
           </motion.button>
 
           <motion.button 
             onClick={onOpenSettings}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center p-1.5 text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
+            className="flex items-center justify-center p-1.5 text-[#fff2d0] transition-all border border-[#dd611f]/30 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
             aria-label={t('tacticalSettings')}
           >
-            <SettingsIcon className="w-3.5 h-3.5 text-[#f2f6f9]" />
+            <SettingsIcon className="w-3.5 h-3.5 text-[#dd611f]" />
           </motion.button>
         </div>
 
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-1.5 sm:p-2 text-[#f2f6f9] focus:outline-none hover:bg-[#f2f6f9]/5 rounded-full transition-colors border border-transparent hover:border-[#687075]/20"
+          className="p-1.5 sm:p-2 text-[#fff2d0] focus:outline-none hover:bg-[#dd611f]/10 rounded-full transition-colors border border-transparent hover:border-[#dd611f]/30"
         >
           {isMenuOpen ? <CloseIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
         </button>
@@ -1048,7 +1041,7 @@ const NavbarApiLanding = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -1067,7 +1060,7 @@ const NavbarApiLanding = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -1088,7 +1081,7 @@ const NavbarApiLanding = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -1112,27 +1105,27 @@ const NavbarApiLanding = ({
 
       {/* Mobile Inline Controls */}
       <div className="flex xl:hidden items-center gap-1 sm:gap-2">
-        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#687075]/20 pr-2 sm:pr-3 mr-1">
+        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#52b72c]/30 pr-2 sm:pr-3 mr-1">
           <motion.button 
             onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
+            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#52b72c] transition-all border border-[#52b72c]/30 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
           >
-            <GlobeIcon className="w-3 h-3 text-[#f2f6f9]" strokeWidth={2.5} />
+            <GlobeIcon className="w-3 h-3 text-[#52b72c]" strokeWidth={2.5} />
             {language === 'en' ? 'EN' : 'UR'}
           </motion.button>
 
           <motion.button 
             onClick={onOpenSettings}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center p-1.5 text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
+            className="flex items-center justify-center p-1.5 text-[#52b72c] transition-all border border-[#52b72c]/30 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
             aria-label={t('tacticalSettings')}
           >
-            <SettingsIcon className="w-3.5 h-3.5 text-[#f2f6f9]" />
+            <SettingsIcon className="w-3.5 h-3.5 text-[#52b72c]" />
           </motion.button>
         </div>
 
-        {/* Mobile Highlight GET STARTED Button */}
+        {/* Mobile Get Started Button */}
         <motion.button
           onClick={() => {
             if (onStart) onStart();
@@ -1140,12 +1133,12 @@ const NavbarApiLanding = ({
           whileTap={{ scale: 0.95 }}
           className="px-3.5 py-1.5 rounded-full font-black text-[8px] sm:text-[9px] uppercase tracking-[0.15em] transition-all bg-[#52b72c] hover:bg-[#52b72c]/90 text-black border border-transparent focus:outline-none flex items-center gap-1 cursor-pointer"
         >
-          <span>START</span>
+          <span>{t('launchSystem')}</span>
         </motion.button>
 
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-1.5 sm:p-2 text-[#f2f6f9] focus:outline-none hover:bg-[#f2f6f9]/5 rounded-full transition-colors border border-transparent hover:border-[#687075]/20"
+          className="p-1.5 sm:p-2 text-[#52b72c] focus:outline-none hover:bg-[#52b72c]/10 rounded-full transition-colors border border-transparent hover:border-[#52b72c]/30"
         >
           {isMenuOpen ? <CloseIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
         </button>
@@ -1160,12 +1153,6 @@ const NavbarApiLanding = ({
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             className="absolute top-[calc(100%+10px)] right-0 w-56 sm:w-64 bg-[#050507]/95 backdrop-blur-xl border border-[#687075]/20 rounded-3xl p-4 flex flex-col gap-2 shadow-2xl xl:hidden overflow-hidden"
           >
-            <button 
-              onClick={() => { setIsMenuOpen(false); if (onStart) onStart(); }}
-              className="w-full text-center px-4 py-3 text-xs font-black tracking-[0.2em] uppercase bg-[#52b72c] hover:bg-[#52b72c]/90 text-black rounded-2xl transition-all shadow-md cursor-pointer mb-2"
-            >
-              GET STARTED
-            </button>
             <button 
               onClick={() => { setIsMenuOpen(false); onSectionChange('home'); }}
               className="w-full text-left px-4 py-3 text-xs font-bold tracking-widest uppercase text-[#f2f6f9] hover:text-[#f2f6f9] hover:bg-[#f2f6f9]/5 rounded-2xl transition-colors text-left"
@@ -1329,7 +1316,7 @@ const NavbarApiApp = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -1348,7 +1335,7 @@ const NavbarApiApp = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -1369,7 +1356,7 @@ const NavbarApiApp = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -1381,29 +1368,29 @@ const NavbarApiApp = ({
 
       {/* Mobile Inline Controls */}
       <div className="flex xl:hidden items-center gap-1 sm:gap-2">
-        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#687075]/20 pr-2 sm:pr-3 mr-1">
+        <div className="flex items-center gap-1 sm:gap-2 border-r border-[#52b72c]/30 pr-2 sm:pr-3 mr-1">
           <motion.button 
             onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
+            className="flex items-center justify-center text-[8px] font-black tracking-[0.2em] text-[#52b72c] transition-all border border-[#52b72c]/30 rounded-full px-3 py-1.5 text-center focus:outline-none min-w-[45px] gap-1 bg-[#050507]/40 backdrop-blur-md"
           >
-            <GlobeIcon className="w-3 h-3 text-[#f2f6f9]" strokeWidth={2.5} />
+            <GlobeIcon className="w-3 h-3 text-[#52b72c]" strokeWidth={2.5} />
             {language === 'en' ? 'EN' : 'UR'}
           </motion.button>
 
           <motion.button 
             onClick={onOpenSettings}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center p-1.5 text-[#f2f6f9] transition-all border border-[#687075]/20 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
+            className="flex items-center justify-center p-1.5 text-[#52b72c] transition-all border border-[#52b72c]/30 rounded-full bg-[#050507]/40 backdrop-blur-md focus:outline-none"
             aria-label={t('tacticalSettings')}
           >
-            <SettingsIcon className="w-3.5 h-3.5 text-[#f2f6f9]" />
+            <SettingsIcon className="w-3.5 h-3.5 text-[#52b72c]" />
           </motion.button>
         </div>
 
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-1.5 sm:p-2 text-[#f2f6f9] focus:outline-none hover:bg-[#f2f6f9]/5 rounded-full transition-colors border border-transparent hover:border-[#687075]/20"
+          className="p-1.5 sm:p-2 text-[#52b72c] focus:outline-none hover:bg-[#52b72c]/10 rounded-full transition-colors border border-transparent hover:border-[#52b72c]/30"
         >
           {isMenuOpen ? <CloseIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
         </button>
@@ -1581,7 +1568,7 @@ const NavbarAbout = ({
                 className="absolute right-0 mt-3 w-72 origin-top-right rounded-[2rem] border border-[#687075]/25 bg-[#050507]/95 backdrop-blur-xl p-5 shadow-2xl z-[200] flex flex-col gap-3"
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#687075] px-2 block mb-1 border-b border-[#687075]/10 pb-2">
-                  Intelligence Tools
+                  {t('intelligenceTools')}
                 </span>
                 
                 <button
@@ -1600,7 +1587,7 @@ const NavbarAbout = ({
                       {t('thermalAnalytics')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Thermal hazard protocol, health risks & field cooling indices.
+                      {t('thermalHazardDesc2')}
                     </div>
                   </div>
                 </button>
@@ -1621,7 +1608,7 @@ const NavbarAbout = ({
                       {t('aqiDashboard')}
                     </div>
                     <div className="text-[10px] text-[#687075] mt-1 leading-normal font-medium max-w-[200px]">
-                      Multi-factor air quality monitoring & respiratory guidance.
+                      {t('airQualityDesc2')}
                     </div>
                   </div>
                 </button>
@@ -4365,7 +4352,7 @@ function LandingPage({
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#52b72c]/30 bg-black/40 text-[#52b72c] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] mb-8 select-none"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#52b72c] animate-pulse" />
-              Air Quality Nodes Active
+              {t('airQualityNodesActive')}
             </motion.div>
 
             {/* Heading */}
@@ -5098,9 +5085,9 @@ const MainAppPage = React.memo(({
             </div>
           </div>
           <div className="text-center space-y-4">
-            <h3 className="text-xl font-black uppercase tracking-[0.5em] text-white">{activeTool === 'aqi' ? 'Air Quality Module' : t('atmosphericIntelligence')}</h3>
+            <h3 className="text-xl font-black uppercase tracking-[0.5em] text-white">{activeTool === 'aqi' ? t('airQualityModule') : t('atmosphericIntelligence')}</h3>
             <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest max-w-xs mx-auto leading-relaxed">
-              Scan initialized. Please select coordinates above to begin {activeTool === 'aqi' ? 'air quality reading.' : 'heatwave analysis.'}
+              {t('scanInitialized')} {activeTool === 'aqi' ? t('airQualityReading') : t('heatwaveAnalysis')}
             </p>
           </div>
         </motion.div>
@@ -5228,7 +5215,7 @@ const MainAppPage = React.memo(({
                        <span className="w-5 h-[1.5px] bg-primary-accent/60" />
                        Situation Briefing
                     </div>
-                    <Markdown>{aiInsights?.summary || "Analyzing current operational environment..."}</Markdown>
+                    <Markdown>{aiInsights?.summary || t('analyzingEnvironment')}</Markdown>
                   </div>
                 )}
               </div>
@@ -5464,7 +5451,7 @@ const MainAppPage = React.memo(({
                        Situation Briefing
                     </div>
                     <div className="text-left font-medium">
-                      <Markdown>{aiInsights?.summary || "Analyzing current air quality environment..."}</Markdown>
+                      <Markdown>{aiInsights?.summary || t('analyzingAirEnvironment')}</Markdown>
                     </div>
                   </div>
                 )}

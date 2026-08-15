@@ -207,7 +207,17 @@ export const translations = {
     aqiFact2Title: "THERMAL INTERACTIONS",
     aqiFact2Text: "Localized atmospheric temperature anomalies trap noxious urban pollutants closer to ground level through meteorological temperature inversions.",
     aqiFact3Title: "SENSORY GRID ALERTING",
-    aqiFact3Text: "AETRAXA intercepts particulate ratios in real-time, matching them with satellite ozone readings to compute localized respiratory danger indexes dynamically."
+    aqiFact3Text: "AETRAXA intercepts particulate ratios in real-time, matching them with satellite ozone readings to compute localized respiratory danger indexes dynamically.",
+    airQualityNodesActive: "Air Quality Nodes Active",
+    intelligenceTools: "Intelligence Tools",
+    thermalHazardDesc2: "Thermal hazard protocol, health risks & field cooling indices.",
+    airQualityDesc2: "Multi-factor air quality monitoring & respiratory guidance.",
+    airQualityModule: "Air Quality Module",
+    scanInitialized: "Scan initialized. Please select coordinates above to begin",
+    airQualityReading: "air quality reading.",
+    heatwaveAnalysis: "heatwave analysis.",
+    analyzingEnvironment: "Analyzing current operational environment...",
+    analyzingAirEnvironment: "Analyzing current air quality environment..."
   },
   ur: {
     home: "مرکزی صفحہ",
@@ -415,7 +425,17 @@ export const translations = {
     aqiFact2Title: "تھرمل تعاملات",
     aqiFact2Text: "مقامی طور پر فضا کے درجہ حرارت میں غیر معمولی تبدیلیاں نقصان دہ شہری آلودگیوں کو زمینی سطح کے قریب روک لیتی ہیں جس کی وجہ موسمی درجہ حرارت کے الٹ جانے کا عمل ہوتا ہے۔",
     aqiFact3Title: "حسی معلوماتی الرٹ",
-    aqiFact3Text: "آیٹراکسا فضا میں ذرات کے تناسب کی حقیقی وقت میں نگرانی کرتا ہے، انہیں اوزون کی سیٹلائٹ ریڈنگز سے ملا کر سانس کے مقامی خطرے کے اشاریوں کا خودکار حساب لگاتا ہے۔"
+    aqiFact3Text: "آیٹراکسا فضا میں ذرات کے تناسب کی حقیقی وقت میں نگرانی کرتا ہے، انہیں اوزون کی سیٹلائٹ ریڈنگز سے ملا کر سانس کے مقامی خطرے کے اشاریوں کا خودکار حساب لگاتا ہے۔",
+    airQualityNodesActive: "فضائی معیار کے نوڈز فعال",
+    intelligenceTools: "انٹیلی جنس ٹولز",
+    thermalHazardDesc2: "حرارتی خطرے کا پروٹوکول، صحت کے خطرات اور فیلڈ کولنگ اشاریے۔",
+    airQualityDesc2: "کثیر عنصری فضائی معیار کی نگرانی اور سانس کی رہنمائی۔",
+    airQualityModule: "فضائی معیار کا ماڈیول",
+    scanInitialized: "اسکین شروع ہو گیا۔ براہ کرم اوپر مقام درج کریں",
+    airQualityReading: "فضائی معیار کی ریڈنگ کے لیے۔",
+    heatwaveAnalysis: "گرمی کی لہر کے تجزیے کے لیے۔",
+    analyzingEnvironment: "موجودہ آپریشنل ماحول کا تجزیہ جاری ہے...",
+    analyzingAirEnvironment: "موجودہ فضائی معیار کے ماحول کا تجزیہ جاری ہے..."
   }
 };
 
