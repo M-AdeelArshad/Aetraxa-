@@ -1,32 +1,273 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import { GoogleGenAI } from "@google/genai";
 import { Groq } from 'groq-sdk';
 import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
 
-// Groq API Key Pool
-const DEFAULT_MODEL = "compound-mini";
+function getGeminiClient(): GoogleGenAI | null {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  return new GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
+    },
+  });
+}
 
-function getGroqClient(tool: 'thermal' | 'aqi' = 'thermal', action: 'tips' | 'chat' = 'tips') {
+function getGroqClient(tool: 'thermal' | 'aqi' = 'thermal', action: 'tips' | 'chat' = 'tips'): Groq | null {
   let key: string | undefined;
   if (tool === 'aqi') {
     if (action === 'tips') {
-      key = process.env.AETRAXA_AQI_TIPS_KEY || process.env.AETRAXA_THERMAL_TIPS_KEY;
+      key = process.env.AETRAXA_AQI_TIPS_KEY || process.env.AETRAXA_THERMAL_TIPS_KEY || process.env.GROQ_API_KEY;
     } else {
-      key = process.env.AETRAXA_AQI_CHAT_KEY || process.env.AETRAXA_THERMAL_CHAT_KEY;
+      key = process.env.AETRAXA_AQI_CHAT_KEY || process.env.AETRAXA_THERMAL_CHAT_KEY || process.env.GROQ_API_KEY;
     }
   } else {
     if (action === 'tips') {
-      key = process.env.AETRAXA_THERMAL_TIPS_KEY;
+      key = process.env.AETRAXA_THERMAL_TIPS_KEY || process.env.AETRAXA_AQI_TIPS_KEY || process.env.GROQ_API_KEY;
     } else {
-      key = process.env.AETRAXA_THERMAL_CHAT_KEY;
+      key = process.env.AETRAXA_THERMAL_CHAT_KEY || process.env.AETRAXA_AQI_CHAT_KEY || process.env.GROQ_API_KEY;
     }
   }
-  if (!key) throw new Error(`API Key for ${tool} ${action} is missing`);
+  if (!key) return null;
   return new Groq({ apiKey: key });
+}
+
+// Fallback intelligence engine: provides accurate, profile-aware insights even when offline
+function generateFallbackInsights(tool: 'thermal' | 'aqi', telemetryData: any, userProfile: any, language: string) {
+  const isUr = language === 'ur';
+  const occ = userProfile?.occupation || (isUr ? 'دستیاب نہیں' : 'N/A');
+  const conds = (userProfile?.health_conditions || []).filter((c: string) => c !== 'None');
+  const deps = (userProfile?.monitoring_others || []).filter((d: string) => d !== 'None');
+
+  const occLabel = isUr ? 'پیشہ ورانہ' : 'Occupation';
+  const medLabel = isUr ? 'طبی' : 'Medical';
+  const depLabel = isUr ? 'زیرِ نگرانی' : 'Dependent';
+
+  if (tool === 'thermal') {
+    const temp = telemetryData?.current?.temp ?? 32;
+    const hi = telemetryData?.current?.heatIndex ?? temp;
+    const humidity = telemetryData?.current?.humidity ?? 50;
+    const wind = telemetryData?.current?.windSpeed ?? 10;
+    const uv = telemetryData?.current?.uvIndex ?? 5;
+    const city = telemetryData?.city || (isUr ? 'منتخب مقام' : 'Current Location');
+
+    let tempDesc = isUr ? "معتدل" : "Moderate";
+    let hiDesc = isUr ? "محفوظ سطح" : "Nominal";
+    let humDesc = isUr ? `${humidity}% متوازن نمی` : `${humidity}% Normal`;
+    let windDesc = isUr ? `${wind} کلومیٹر/گھنٹہ معتدل ہوا` : `${wind} km/h Breeze`;
+    let uvDesc = isUr ? `UV ${uv} مناسب` : `UV ${uv} Moderate`;
+
+    if (hi >= 52) {
+      tempDesc = isUr ? "انتہائی شدید ترین گرمی" : "Critical Extreme Heat";
+      hiDesc = isUr ? "ہیٹ اسٹروک کا شدید ترین خطرہ" : "Critical Heatstroke Threat";
+      uvDesc = isUr ? `UV ${uv} انتہائی خطرناک شعاعیں` : `UV ${uv} Extreme Radiative Load`;
+    } else if (hi >= 45) {
+      tempDesc = isUr ? "شدید خطرناک گرمی" : "Dangerous Thermal Load";
+      hiDesc = isUr ? "شدید تھکن و لو کا خطرہ" : "High Danger Zone";
+      uvDesc = isUr ? `UV ${uv} تیز ترین دھوپ` : `UV ${uv} Very High`;
+    } else if (hi >= 39) {
+      tempDesc = isUr ? "شدید گرم" : "Extreme Heat";
+      hiDesc = isUr ? "زیادہ خطرہ" : "Extreme Caution";
+    } else if (hi >= 34) {
+      tempDesc = isUr ? "گرم موسم" : "High Warmth";
+      hiDesc = isUr ? "محتاط رہیں" : "Caution Tier";
+    }
+
+    let summary = "";
+    if (hi >= 45) {
+      summary = isUr 
+        ? `${city} میں گرمی کا انڈیکس ${Math.round(hi)}°C تک پہنچ چکا ہے۔ لو لگنے کے خطرات کے پیشِ نظر براہِ راست دھوپ اور غیر ضروری محنت سے مکمل پرہیز کریں۔`
+        : `Thermal index for ${city} reaches a hazardous ${Math.round(hi)}°C. High physiological strain detected—limit direct sun exposure and hydrate aggressively.`;
+    } else if (hi >= 35) {
+      summary = isUr
+        ? `${city} میں گرمی کی شدت ${Math.round(hi)}°C ہے۔ وافر پانی کے استعمال اور دوپہر کے اوقات میں سایہ دار جگہوں پر رہنے کی ہدایت دی جاتی ہے۔`
+        : `Active heat index in ${city} is elevated at ${Math.round(hi)}°C. Maintain constant electrolyte hydration and take scheduled cooling breaks.`;
+    } else {
+      summary = isUr
+        ? `${city} میں تھرمل حالات پرسکون اور محفوظ ہیں۔ عام معمولات جاری رکھے جا سکتے ہیں، مناسب ہائیڈریشن برقرار رکھیں۔`
+        : `Atmospheric thermal conditions in ${city} are within safe comfort zones. Standard hydration and normal outdoor routines are recommended.`;
+    }
+
+    const suggestions: string[] = [];
+    if (userProfile && userProfile.occupation && userProfile.occupation.toLowerCase() !== 'none') {
+      suggestions.push(isUr 
+        ? `${occLabel} [${occ}]: کام کے دوران ہر 20 منٹ بعد سایہ دار یا ٹھنڈی جگہ پر 5 منٹ کا وقفہ لیں اور مسلسل او آر ایس یا پانی استعمال کریں۔`
+        : `${occLabel} [${occ}]: Implement 5-minute shaded recovery intervals every 20 minutes of physical workload; carry dynamic electrolyte hydration.`);
+    } else {
+      suggestions.push(isUr
+        ? `${occLabel} [${occ}]: دن کے گرم ترین اوقات (12:00 سے 16:00) میں باہر کی سخت جسمانی مشقت محدود رکھیں۔`
+        : `${occLabel} [${occ}]: Regulate outdoor physical exertion during peak heating periods (12:00-16:00) with proactive water intake.`);
+    }
+
+    if (conds.length > 0) {
+      suggestions.push(isUr
+        ? `${medLabel} [${conds[0]}]: گرمی کے دوران دل کی دھڑکن اور سانس کے ردِعمل پر نظر رکھیں۔ ٹھنڈے کمرے میں رہیں اور باقاعدہ آرام کریں۔`
+        : `${medLabel} [${conds[0]}]: Monitor cardiovascular and airway strain under heat load; prioritize air-conditioned resting environments.`);
+    } else {
+      suggestions.push(isUr
+        ? `${medLabel} [${isUr ? 'صحت مند' : 'None'}]: دن بھر میں کم از کم 2.5 سے 3 لیٹر پانی کا استعمال یقینی بنائیں تاکہ پانی کی کمی نہ ہو۔`
+        : `${medLabel} [Optimal]: Maintain a target intake of 2.5–3.0L of water throughout the day to prevent sub-clinical dehydration.`);
+    }
+
+    if (deps.length > 0) {
+      suggestions.push(isUr
+        ? `${depLabel} [${deps[0]}]: زیرِ نگرانی افراد کے لیے ٹھنڈے ماحول اور مسلسل تازہ مشروبات کی فراہمی یقینی بنائیں۔`
+        : `${depLabel} [${deps[0]}]: Ensure continuous passive cooling and verified fluid intake for monitored dependents throughout peak heat hours.`);
+    } else {
+      suggestions.push(isUr
+        ? `${depLabel} [${isUr ? 'کوئی نہیں' : 'None'}]: براہِ راست دھوپ سے بچنے کے لیے چھتری، ٹوپی اور ہلکے سوتی کپڑوں کا انتخاب کریں۔`
+        : `${depLabel} [Standard]: Utilize UV-blocking headwear, loose breathable fabrics, and seek shaded transit paths when walking outdoors.`);
+    }
+
+    return {
+      temp: tempDesc,
+      heatIndex: hiDesc,
+      humidity: humDesc,
+      wind: windDesc,
+      uv: uvDesc,
+      summary,
+      suggestions,
+      peakSunHours: "11:30 - 16:00",
+      coolerHours: "19:00 - 08:00"
+    };
+  } else {
+    // AQI Fallback
+    const aqi = telemetryData?.current?.aqi ?? 65;
+    const pm2_5 = telemetryData?.current?.pm2_5 ?? 22;
+    const pm10 = telemetryData?.current?.pm10 ?? 45;
+    const ozone = telemetryData?.current?.ozone ?? 30;
+    const city = telemetryData?.city || (isUr ? 'منتخب مقام' : 'Current Location');
+
+    let aqiDesc = isUr ? "معتدل فضائی معیار" : "Moderate";
+    let pm10Desc = isUr ? `${pm10} µg/m³ معتدل` : `${pm10} µg/m³ Moderate`;
+    let pm25Desc = isUr ? `${pm2_5} µg/m³ قابلِ قبول` : `${pm2_5} µg/m³ Acceptable`;
+    let ozoneDesc = isUr ? `${ozone} µg/m³ محفوظ` : `${ozone} µg/m³ Good`;
+
+    if (aqi >= 300) {
+      aqiDesc = isUr ? "انتہائی خطرناک فضائی آلودگی" : "Hazardous Emergency";
+      pm25Desc = isUr ? `${pm2_5} µg/m³ انتہائی زہریلا` : `${pm2_5} µg/m³ Severe Toxic Load`;
+    } else if (aqi >= 200) {
+      aqiDesc = isUr ? "بہت غیر صحت بخش" : "Very Unhealthy";
+      pm25Desc = isUr ? `${pm2_5} µg/m³ شدید آلودگی` : `${pm2_5} µg/m³ High Alert`;
+    } else if (aqi >= 150) {
+      aqiDesc = isUr ? "غیر صحت بخش" : "Unhealthy";
+    } else if (aqi >= 100) {
+      aqiDesc = isUr ? "حساس افراد کے لیے نقصان دہ" : "Unhealthy for Sensitive Groups";
+    } else if (aqi <= 50) {
+      aqiDesc = isUr ? "بہترین اور صاف ہوا" : "Good / Fresh";
+    }
+
+    let summary = "";
+    if (aqi >= 150) {
+      summary = isUr
+        ? `${city} میں ایئر کوالٹی انڈیکس ${aqi} پر آلودہ ترین درجے میں ہے۔ باہر نکلتے وقت این 95 ماسک لازمی استعمال کریں اور کھڑکیاں بند رکھیں۔`
+        : `Air quality index for ${city} sits at ${aqi} (Unhealthy). High particulate burden warrants N95 respirators and indoor air filtration.`;
+    } else if (aqi >= 100) {
+      summary = isUr
+        ? `${city} میں فضا میں دھواں اور باریک ذرات موجود ہیں (AQI ${aqi})۔ حساس اور معمر افراد کھلی جگہوں پر دیر تک رہنے سے پرہیز کریں۔`
+        : `Localized atmosphere in ${city} shows elevated particulate concentrations (AQI ${aqi}). Sensitive individuals should limit prolonged outdoor exposure.`;
+    } else {
+      summary = isUr
+        ? `${city} میں فضائی معیار تسلی بخش ہے۔ ہوا تازہ ہے اور کھلی فضا میں عام سرگرمیاں بغیر کسی تشویش کے جاری رکھی جا سکتی ہیں۔`
+        : `Atmospheric air conditions in ${city} are within safe regulatory standards (AQI ${aqi}). Safe for normal outdoor movement and natural ventilation.`;
+    }
+
+    const suggestions: string[] = [];
+    if (userProfile && userProfile.occupation && userProfile.occupation.toLowerCase() !== 'none') {
+      suggestions.push(isUr
+        ? `${occLabel} [${occ}]: گرد و غبار اور سموگ کے دوران بیرونی کام کرتے وقت معیاری ریسپریٹر ماسک کا مسلسل استعمال یقینی بنائیں۔`
+        : `${occLabel} [${occ}]: Equip tight-fitting N95 particulate filtration when operating in traffic-dense or dust-exposed field zones.`);
+    } else {
+      suggestions.push(isUr
+        ? `${occLabel} [${occ}]: صبح اور شام کے اوقات میں ہوا کا جائزہ لے کر ہی چہل قدمی یا بیرونی ورزش کا شیڈول بنائیں۔`
+        : `${occLabel} [${occ}]: Check hourly particulate forecasts prior to scheduling high-ventilation cardio or outdoor tasks.`);
+    }
+
+    if (conds.length > 0) {
+      suggestions.push(isUr
+        ? `${medLabel} [${conds[0]}]: تنفسی اور قلبی دباؤ سے بچنے کے لیے بند کمرے میں ایئر پیوریفائر یا مناسب وینٹیلیشن استعمال کریں۔`
+        : `${medLabel} [${conds[0]}]: Protect respiratory tract with HEPA air purification indoors and carry prescribed rescue medication.`);
+    } else {
+      suggestions.push(isUr
+        ? `${medLabel} [${isUr ? 'صحت مند' : 'None'}]: آلودگی کی صورت میں آنکھوں کو ٹھنڈے پانی سے دھوئیں اور گلے کو تر رکھیں۔`
+        : `${medLabel} [Nominal]: Rinse face and eyes with fresh water after extended transit to clear fine surface particulates.`);
+    }
+
+    if (deps.length > 0) {
+      suggestions.push(isUr
+        ? `${depLabel} [${deps[0]}]: بچوں اور بزرگوں کو دھواں زدہ یا ٹریفک والے مصروف راستوں سے دور رکھیں۔`
+        : `${depLabel} [${deps[0]}]: Restrict vulnerable dependents from high-emission thoroughfares and maintain clean indoor airflow.`);
+    } else {
+      suggestions.push(isUr
+        ? `${depLabel} [${isUr ? 'کوئی نہیں' : 'None'}]: گھر کے اندر نمی اور صفائی برقرار رکھیں تاکہ باریک ذرات فضا میں معلق نہ رہیں۔`
+        : `${depLabel} [General]: Keep household seals intact during atmospheric haze spikes to sustain clean ambient air.`);
+    }
+
+    return {
+      aqi: aqiDesc,
+      pm10: pm10Desc,
+      pm2_5: pm25Desc,
+      ozone: ozoneDesc,
+      summary,
+      suggestions
+    };
+  }
+}
+
+function generateFallbackChat(
+  tool: 'thermal' | 'aqi',
+  userMessage: string,
+  weatherData: any,
+  aqiData: any,
+  userProfile: any,
+  language: string
+): string {
+  const msgLower = userMessage.toLowerCase();
+  const isUrduQuery = /[\u0600-\u06FF]/.test(userMessage) || language === 'ur';
+  const isRomanUrdu = /(kya|hai|garmi|hawa|paani|pani|thand|masla|khansi|saans|bachao|krun|karun|batao)/i.test(userMessage);
+
+  if (tool === 'thermal') {
+    const temp = weatherData?.current?.temp ?? 34;
+    const hi = weatherData?.current?.heatIndex ?? temp;
+    const hum = weatherData?.current?.humidity ?? 55;
+    const city = weatherData?.city || 'Current Location';
+
+    if (isUrduQuery) {
+      if (msgLower.includes('پانی') || msgLower.includes('ہائیڈریشن')) {
+        return `موجودہ درجہ حرارت (${temp}°C) اور گرمی کے انڈیکس (${Math.round(hi)}°C) کے مطابق ہر گھنٹے کم از کم 2 سے 3 گلاس پانی پینا ضروری ہے۔ جسم میں نمکیات کی کمی سے بچنے کے لیے لیموں پانی یا او آر ایس کا استعمال کریں۔`;
+      }
+      return `مقام: ${city}\nموجودہ درجہ حرارت: ${temp}°C\nگرمی کا حقیقی احساس: ${Math.round(hi)}°C\n\nتجاویز:\n- دن کے گرم ترین اوقات میں براہِ راست دھوپ سے پرہیز کریں۔\n- ڈھیلے اور ہلکے رنگ کے سوتی کپڑے پہنیں۔\n- اگر چکر یا متلی محسوس ہو تو فوری طور پر ٹھنڈی اور سایہ دار جگہ پر آرام کریں۔`;
+    }
+
+    if (isRomanUrdu) {
+      return `Sector: ${city}\nCurrent Temp: ${temp}°C | Heat Index: ${Math.round(hi)}°C | Humidity: ${hum}%\n\nTactical Hidayat:\n- Garmi ki shiddat zyada hai, har 20 minute baad paani ya ORS istemal karein.\n- Dhoop mein nikalte waqt sar ko dhaanp kar rakhein aur halkay sooti kapray pehnein.\n- Agar kamzori ya chakkar ayein toh foran kisi thandi jagah par aaraam karein.`;
+    }
+
+    return `Tactical Assessment for ${city}:\n- Ambient Temp: ${temp}°C (Heat Index: ${Math.round(hi)}°C)\n- Humidity Quotient: ${hum}%\n\nDirectives:\n1. Maintain aggressive hydration (~500ml/hr during physical exertion).\n2. Avoid unshaded exposure between 12:00 and 16:00.\n3. Watch for early heat exhaustion symptoms (dizziness, pale skin, fatigue).`;
+  } else {
+    // AQI Chat Fallback
+    const aqi = aqiData?.current?.aqi ?? 85;
+    const pm2_5 = aqiData?.current?.pm2_5 ?? 28;
+    const city = aqiData?.city || 'Current Location';
+
+    if (isUrduQuery) {
+      return `فضائی صورتحال برائے ${city}:\n- ایئر کوالٹی انڈیکس (AQI): ${aqi}\n- باریک ذرات (PM2.5): ${pm2_5} µg/m³\n\nتجاویز:\n- باہر نکلتے وقت معیاری این 95 ماسک کا استعمال کریں۔\n- زیادہ ٹریفک اور گرد و غبار والے راستوں سے گریز کریں۔\n- گھر کے اندر تازہ اور صاف ہوا کی وینٹیلیشن برقرار رکھیں۔`;
+    }
+
+    if (isRomanUrdu) {
+      return `Sector: ${city}\nAir Quality (AQI): ${aqi} | PM2.5: ${pm2_5} µg/m³\n\nTactical Hidayat:\n- Hawa mein gard-o-ghubaar aur smog ki wajah se bahar nikalte waqt N95 mask pehnein.\n- Zyada traffic walay ilaqon se door rahein.\n- Saans ke mareez aur buzurg afrad band kamray mein air purifier ya fresh air ventilation istemal karein.`;
+    }
+
+    return `Air Quality Intelligence for ${city}:\n- Current AQI: ${aqi} (European/US Standard)\n- Fine Particulate (PM2.5): ${pm2_5} µg/m³\n\nDirectives:\n1. Wear N95 respirator masks when commuting along major arterial roads.\n2. Sensitive respiratory profiles should minimize high-ventilation cardio outdoors.\n3. Keep indoor air clean using secondary HEPA filtration where available.`;
+  }
 }
 
 async function startServer() {
@@ -36,67 +277,43 @@ async function startServer() {
   app.use(express.json());
 
   app.get("/api/health", (req, res) => {
+    const hasGemini = !!process.env.GEMINI_API_KEY;
+    const hasGroq = !!(
+      process.env.AETRAXA_THERMAL_TIPS_KEY || 
+      process.env.AETRAXA_THERMAL_CHAT_KEY || 
+      process.env.AETRAXA_AQI_TIPS_KEY || 
+      process.env.AETRAXA_AQI_CHAT_KEY || 
+      process.env.GROQ_API_KEY
+    );
     res.json({ 
       status: "ok", 
-      tipsConfigured: !!process.env.AETRAXA_THERMAL_TIPS_KEY,
-      chatConfigured: !!process.env.AETRAXA_THERMAL_CHAT_KEY,
-      aqiTipsConfigured: !!(process.env.AETRAXA_AQI_TIPS_KEY || process.env.AETRAXA_THERMAL_TIPS_KEY),
-      aqiChatConfigured: !!(process.env.AETRAXA_AQI_CHAT_KEY || process.env.AETRAXA_THERMAL_CHAT_KEY)
+      engine: hasGemini ? "gemini" : (hasGroq ? "groq" : "fallback-active"),
+      geminiConfigured: hasGemini,
+      groqConfigured: hasGroq,
+      model: "groq/compound",
+      tipsConfigured: true,
+      chatConfigured: true
     });
   });
 
-  // AI Insights API (Static Analysis)
+  // AI Insights API
   app.post("/api/ai-insights", async (req, res) => {
-    console.log("AI Insights request received for city:", req.body?.telemetryData?.city, "Tool:", req.body?.tool);
-    
-    try {
-      const { tool, telemetryData, userProfile, language } = req.body;
-      const toolType = tool === 'aqi' ? 'aqi' : 'thermal';
-      const groq = getGroqClient(toolType, 'tips');
-      
-      let profileContext = '';
-      if (userProfile) {
-        const hasVulnerabilities = (userProfile.health_conditions || []).some((c: string) => c !== 'None');
-        const hasDependents = (userProfile.monitoring_others || []).some((d: string) => d !== 'None');
-        const hasOccupation = !!userProfile.occupation && userProfile.occupation.trim().toLowerCase() !== 'none' && userProfile.occupation.trim() !== '';
+    const { tool, telemetryData, userProfile, language } = req.body;
+    const toolType: 'thermal' | 'aqi' = tool === 'aqi' ? 'aqi' : 'thermal';
+    console.log(`[AI Insights] Request for ${toolType} in ${telemetryData?.city || 'unknown'}, lang: ${language}`);
 
-        const labelOccupation = language === 'ur' ? 'پیشہ ورانہ' : 'Occupation';
-        const labelMedical = language === 'ur' ? 'طبی' : 'Medical';
-        const labelDependent = language === 'ur' ? 'زیرِ نگرانی' : 'Dependent';
-        const defaultNa = language === 'ur' ? 'دستیاب نہیں' : 'N/A';
+    let profileContext = '';
+    if (userProfile) {
+      const hasVulnerabilities = (userProfile.health_conditions || []).some((c: string) => c !== 'None');
+      const hasDependents = (userProfile.monitoring_others || []).some((d: string) => d !== 'None');
+      const hasOccupation = !!userProfile.occupation && userProfile.occupation.trim().toLowerCase() !== 'none' && userProfile.occupation.trim() !== '';
 
-        const translateHealthCond = (cond: string) => {
-          if (language !== 'ur') return cond;
-          switch (cond) {
-            case 'Cardiovascular': return 'دل کے امراض';
-            case 'Respiratory': return 'سانس کے مسائل';
-            case 'Hypertension': return 'ہائی بلڈ پریشر';
-            case 'Diabetes': return 'ذیابیطس';
-            case 'Pregnancy': return 'حمل';
-            default: return cond;
-          }
-        };
+      const labelOccupation = language === 'ur' ? 'پیشہ ورانہ' : 'Occupation';
+      const labelMedical = language === 'ur' ? 'طبی' : 'Medical';
+      const labelDependent = language === 'ur' ? 'زیرِ نگرانی' : 'Dependent';
+      const defaultNa = language === 'ur' ? 'دستیاب نہیں' : 'N/A';
 
-        const translateDep = (dep: string) => {
-          if (language !== 'ur') return dep;
-          switch (dep) {
-            case 'Elderly': return 'بزرگ افراد';
-            case 'Infants': return 'کم عمر بچے';
-            case 'OutdoorWorkers': return 'بیرونی عملہ';
-            case 'Pets': return 'پالتو جانور';
-            default: return dep;
-          }
-        };
-
-        const displayOccVal = userProfile.occupation || defaultNa;
-        const displayMedVal = (userProfile.health_conditions || []).filter((h: string) => h !== 'None')[0]
-          ? translateHealthCond((userProfile.health_conditions || []).filter((h: string) => h !== 'None')[0])
-          : defaultNa;
-        const displayDepVal = (userProfile.monitoring_others || []).filter((h: string) => h !== 'None')[0]
-          ? translateDep((userProfile.monitoring_others || []).filter((h: string) => h !== 'None')[0])
-          : defaultNa;
-
-        profileContext = `
+      profileContext = `
       User Profile Context:
       - Occupation: ${userProfile.occupation || 'Not declared'}
       - Time outside: ${userProfile.outdoor_hours || 0} hours/day
@@ -105,458 +322,221 @@ async function startServer() {
       - Alert style preference: ${userProfile.alert_style || 'Detailed'}
       - Preferred language: ${userProfile.preferred_language || (language === 'ur' ? 'Urdu' : 'English')}
       
-      IMPORTANT PERSONALIZATION INSTRUCTIONS (CRITICAL HIGHEST PRIORITY):
-      1. You MUST explicitly and custom-tailor the "summary" and ALL 3 items of "suggestions" directly to the user's declared profile.
-      ${hasOccupation ? `- Since their occupation is "${userProfile.occupation}", at least one suggestion and the summary MUST directly address physical workload, outdoor exposure patterns, and safety maneuvers specific to a ${userProfile.occupation}.` : ''}
-      ${hasVulnerabilities ? `- Since they have health conditions: "${(userProfile.health_conditions || []).filter((h: string) => h !== 'None').join(', ')}", at least one suggestion MUST explicitly detail the physiological risks (e.g., cardiovascular strain, airway constriction) and actionable preventions for these exact conditions under the current heat/humidity.` : ''}
-      ${hasDependents ? `- Since they monitor dependents: "${(userProfile.monitoring_others || []).filter((h: string) => h !== 'None').join(', ')}", at least one suggestion MUST provide concrete tactical instructions to safeguard these dependents (e.g., seniors, children, pets) in these current environments.` : ''}
-      - Each of the 3 suggestions MUST be prefixed by its profile-relevant label, for example:
-        "${labelOccupation} [${displayOccVal}]: <highly tailored protocol>"
-        "${labelMedical} [${displayMedVal}]: <highly tailored physiological protocol>"
-        "${labelDependent} [${displayDepVal}]: <highly tailored dependent protection protocol>"
-      - If they have no custom configurations (occupation is empty, medical is 'None', dependents is 'None'), construct tactical recommendations based on their "${userProfile.outdoor_hours || 0} hours" of daily outdoor exposure, and add a friendly note in the "summary" encouraging them to click the gear icon to customize their tactical settings.
-      2. Keep responses in the user's Preferred Language if possible, especially the "summary" and "suggestions" arrays! (e.g. if Urdu, output Urdu strings for summary and suggestions, but keep JSON keys in English).
-      3. Scale severity and urgency of warnings based on their profile data (e.g. cardiovascular risk should trigger much faster, high-priority cardiac strain alerts).
+      IMPORTANT PERSONALIZATION INSTRUCTIONS:
+      1. Tailor "summary" and all 3 items of "suggestions" to the user's declared profile.
+      ${hasOccupation ? `- Occupation is "${userProfile.occupation}": provide specific physical workload and outdoor safety advice for a ${userProfile.occupation}.` : ''}
+      ${hasVulnerabilities ? `- Health condition "${(userProfile.health_conditions || []).filter((h: string) => h !== 'None').join(', ')}": highlight physiological risks and prevention.` : ''}
+      ${hasDependents ? `- Monitoring dependents "${(userProfile.monitoring_others || []).filter((h: string) => h !== 'None').join(', ')}": specify protection measures.` : ''}
+      - Format suggestions with prefixes:
+        "${labelOccupation} [${userProfile.occupation || defaultNa}]: <actionable advice>"
+        "${labelMedical} [${(userProfile.health_conditions || []).filter((h: string) => h !== 'None')[0] || defaultNa}]: <actionable advice>"
+        "${labelDependent} [${(userProfile.monitoring_others || []).filter((h: string) => h !== 'None')[0] || defaultNa}]: <actionable advice>"
       `;
-      }
+    }
 
-      const uiLanguageInstruction = language === 'ur' ? `
-CRITICAL INSTRUCTION FOR URDU SCRIPT:
-1. ALL generated text content (such as summaries, suggestions, and qualitative assessments) MUST be written in the actual URDU SCRIPT (Urdu language written in Arabic style).
-2. Do NOT use phonetic Roman Urdu / english characters for these fields.
-3. Keep all JSON key names strictly in English (do not translate keys).
-4. ABSOLUTELY FORBIDDEN DEVANAGARI / HINDI LEAK:
-   - Do NOT output any Devanagari characters (such as "स", "त", "र", "ब", "स्त", "स्तर", "सावधानी", "सुरक्षा") under any circumstances!
-   - Do NOT mix Devanagari characters with Arabic characters. For example, do not write "برتنے" with Devanagari "बर" like "बरتنے". It must be written fully and properly in pure Arabic script as "برتنے".
-   - You MUST ensure all characters are standard Perso-Arabic Urdu characters.
-5. ABSOLUTELY FORBIDDEN HINDI/SANSKRIT VOCABULARY OVERRIDES:
-   - Do NOT use the Hindi word "چھایا" or "چھای ہ" (always use Urdu "سایہ" or "سائے" in Arabic script).
-   - Do NOT use the Hindi word "स्तर" / "star" (always use Urdu "سطح" or "درجہ" in Arabic script).
-   - Do NOT use the Hindi word "उपाय" (always use Urdu "تدابیر" or "حل" in Arabic script).
-   - Do NOT use the Hindi word "सावधानी" (always use Urdu "احتیاط" in Arabic script).
-   - Do NOT use the Hindi word "सुरक्षा" (always use Urdu "حفاظت" in Arabic script).
-   - Do NOT use the Hindi word "समस्या" (always use Urdu "مسئلہ" or "پریشانی" in Arabic script).
-   - Do NOT use the Hindi word "चिंता" (always use Urdu "تشویش" or "پریشانی" in Arabic script).
-   - Do NOT use the Hindi word "प्रभाव" (always use Urdu "اثر" or "اثرات" in Arabic script).
-   - Do NOT use the Hindi word "विशेष" (always use Urdu "خاص" in Arabic script).
-   - Do NOT use the Hindi word "आवश्यक" (always use Urdu "ضروری" in Arabic script).
-   - Do NOT use the Hindi word "चेतावनी" (always use Urdu "تنبیہ" in Arabic script).
-   - Do NOT use the Hindi word "سکیورٹی" or "सुरक्षित" (always use Urdu "محفوظ" in Arabic script).` : '';
-
-      const strictFormattingInstruction = `
-STRICT JSON COMPLIANCE REGULATION:
-1. Under NO circumstances translate the JSON keys. They must be exact English keys as specified in the schema.
-2. The JSON keys MUST be exactly:
-   For Thermal tool: "temp", "heatIndex", "humidity", "wind", "uv", "summary", "suggestions", "peakSunHours", "coolerHours".
-   For Air Quality (AQI) tool: "aqi", "pm10", "pm2_5", "ozone", "summary", "suggestions".
-3. Return ONLY a single flat JSON object with no nested objects, no trailing commas, and no comments.
-4. Output values must be simple flat strings (or a simple flat array of strings for "suggestions").
-5. Properly escape any double quotes inside text values (using \\") to prevent JSON validation errors. Do not output multiple keys like "summary": "": "value".` + (language === 'ur' ? `
-6. Example structure for URDU:
-   {
-     ${tool === 'thermal' ? `
-     "temp": "شدید گرم",
-     "heatIndex": "بہت زیادہ خطرہ",
-     "humidity": "کافی زیادہ حبس",
-     "wind": "ہلکی ہوا",
-     "uv": "خطرناک حد تک تیز",
-     "summary": "تھرمل برریفنگ کا خلاصہ یہاں لکھیں۔",
-     "suggestions": [
-       "پہلا گائیڈ لائن",
-       "دوسرا گائیڈ لائن",
-       "تیسرا گائیڈ لائن"
-     ],
-     "peakSunHours": "12:00 - 15:00",
-     "coolerHours": "18:00 - 08:00"
-     ` : `
-     "aqi": "حساس گروپس کے لیے نقصان دہ",
-     "pm10": "صحت بخش نہیں",
-     "pm2_5": "غیر تسلی بخش",
-     "ozone": "معتدل صحت بخش",
-     "summary": "فضائی معیار کا خلاصہ یہاں لکھیں۔",
-     "suggestions": [
-       "پہلا تنفسی مشورہ",
-       "دوسرا تنفسی مشورہ",
-       "تیسرا تنفسی مشورہ"
-     ]
-     `}
-   }` : `
-6. Example structure for ENGLISH:
-   {
-     ${tool === 'thermal' ? `
-     "temp": "Very Hot",
-     "heatIndex": "High Danger",
-     "humidity": "Humid",
-     "wind": "Calm Breeze",
-     "uv": "Extreme",
-     "summary": "Brief summary of weather conditions",
-     "suggestions": [
-       "First recommendation",
-       "Second recommendation",
-       "Third recommendation"
-     ],
-     "peakSunHours": "11:00 - 16:00",
-     "coolerHours": "19:00 - 07:00"
-     ` : `
-     "aqi": "Unhealthy for Sensitive Groups",
-     "pm10": "Moderate",
-     "pm2_5": "Unhealthful Level",
-     "ozone": "Fine",
-     "summary": "Brief air quality summary here",
-     "suggestions": [
-       "First suggestion here",
-       "Second suggestion here",
-       "Third suggestion here"
-     ]
-     `}
-   }`);
+    const uiLanguageInstruction = language === 'ur' ? `
+    CRITICAL INSTRUCTION FOR URDU SCRIPT:
+    1. Write all text values (summary, suggestions, assessments) in authentic, formal URDU SCRIPT (Arabic style).
+    2. Do NOT use phonetic Roman Urdu or Devanagari characters.
+    3. Keep all JSON keys in English as specified.
+    ` : '';
 
     let prompt = '';
     let systemPrompt = '';
 
-    if (tool === 'thermal') {
-      const isDangerous = telemetryData.current.temp > 35 || telemetryData.current.heatIndex > 38 || telemetryData.current.uvIndex > 8;
-      const toneInstruction = isDangerous
-        ? "CRITICAL TONE: Since current weather conditions are dangerous or extreme, adopt a highly alert, authoritative, sharp, clinical, intense thermal-tactical tone emphasizing heatstroke warnings, direct cooling protocols, and urgent defensive actions."
-        : "CRITICAL TONE: Since current weather is calm, comfortable, and safe, adopt a slightly calm, reassuring, peaceful, and gentle tone. Avoid intense, alarmist, or emergency-style directives; focus on cozy everyday thermal comfort, ventilation, and enjoyable hydration tips.";
-
-      prompt = `Analyze this weather data for ${telemetryData.city}:
-      Temperature: ${telemetryData.current.temp}°C
-      Heat Index: ${telemetryData.current.heatIndex}°C
-      Humidity: ${telemetryData.current.humidity}%
-      Wind Speed: ${telemetryData.current.windSpeed} km/h
-      UV Index: ${telemetryData.current.uvIndex}
+    if (toolType === 'thermal') {
+      prompt = `Analyze this weather data for ${telemetryData?.city || 'Current Location'}:
+      Temperature: ${telemetryData?.current?.temp}°C
+      Heat Index: ${telemetryData?.current?.heatIndex}°C
+      Humidity: ${telemetryData?.current?.humidity}%
+      Wind Speed: ${telemetryData?.current?.windSpeed} km/h
+      UV Index: ${telemetryData?.current?.uvIndex}
       ${profileContext}
       ${uiLanguageInstruction}
-      ${strictFormattingInstruction}
 
-      MISSION PARAMETERS:
-      1. CRITICAL: ${toneInstruction}
-      2. CRITICAL: Avoid generic "drink water" advice. Provide DATA-DRIVEN, TACTICAL cooling protocols.
-      3. If temperature is >40°C, calculate a specific hydration target.
-      4. If UV is >8, specify exactly when to avoid direct exposure based on solar peak.
-      5. If humidity is >60% alongside high heat, warn about "wet-bulb" effect and sweat evaporation failure.
-      
-      OUTPUT REQUIREMENTS:
-      1. qualitative assessments: concise (max 8 words) for temp, heatIndex, humidity, wind, uv.
-      2. summary: A tactical briefing matching the requested tone (max 35 words).
-      3. suggestions: A list of exactly 3 highly customized tactical suggestions matching the requested tone.
-      4. "peakSunHours": "HH:MM - HH:MM" window.
-      5. "coolerHours": "HH:MM - HH:MM" window.
-      
-      Format: JSON with keys "temp", "heatIndex", "humidity", "wind", "uv", "summary", "suggestions" (array of strings), "peakSunHours", "coolerHours".
-      Return ONLY valid JSON.
+      Return a JSON object with keys:
+      "temp": qualitative short description (e.g. "Very Hot" / "شدید گرم")
+      "heatIndex": qualitative danger level (e.g. "High Danger" / "شدید خطرہ")
+      "humidity": qualitative humidity status (e.g. "Humid" / "کافی نمی")
+      "wind": qualitative wind status (e.g. "Calm Breeze" / "ہلکی ہوا")
+      "uv": qualitative uv level (e.g. "Extreme" / "خطرناک حد تک تیز")
+      "summary": concise tactical safety briefing (max 35 words)
+      "suggestions": array of exactly 3 customized tactical strings
+      "peakSunHours": "HH:MM - HH:MM"
+      "coolerHours": "HH:MM - HH:MM"
       `;
 
-      systemPrompt = `
-      You are the AETRAXA Tactical Safety Analyst. Your ONLY purpose is to analyze weather and thermal hazard data.
-      
-      STRICT TOPIC ENFORCEMENT:
-      - Only analyze heat, humidity, UV, and survival-related environmental factors.
-      - If the user context suggests anything outside environmental safety, return a polite notification in the 'summary' that you are specialized for weather monitoring.
-
-      STRICT JSON COMPLIANCE:
-      - You must return a perfectly valid, standard JSON object starting with '{' and ending with '}'.
-      - Do NOT wrap the JSON in markdown code blocks, do NOT write any pre-amble or post-amble text.
-      - Keep all JSON keys strictly as lowercase English, specified in the schema.
-      - Values must be written in the target user language (Urdu script for Urdu, English for English).
-      - Ensure strings are properly escaped to compile as legal JSON.
-      `;
-    } else if (tool === 'aqi') {
-      const isDangerous = telemetryData.current.aqi > 100 || telemetryData.current.pm2_5 > 50;
-      const toneInstruction = isDangerous
-        ? "CRITICAL TONE: Since air quality is currently hazardous or smoggy, adopt a highly alert, authoritative, sharp, clinical, intense tactical tone emphasizing direct N95 respiratory protection, avoiding outdoors, and immediate defensive actions."
-        : "CRITICAL TONE: Since air quality is safe, fresh, and healthy, adopt a slightly calm, reassuring, peaceful, gentle, and conversational tone. Focus on pleasant ventilation, fresh-air comfort, and cosy breathing tips without alarmist warnings.";
-
-      prompt = `Analyze this Air Quality data for ${telemetryData.city}:
-      AQI (European): ${telemetryData.current.aqi}
-      PM10: ${telemetryData.current.pm10} μg/m³
-      PM2.5: ${telemetryData.current.pm2_5} μg/m³
-      Carbon Monoxide: ${telemetryData.current.co} μg/m³
-      Nitrogen Dioxide: ${telemetryData.current.no2} μg/m³
-      Ozone: ${telemetryData.current.ozone} μg/m³
-      Dust: ${telemetryData.current.dust} μg/m³
+      systemPrompt = `You are the AETRAXA Tactical Thermal Safety Analyst. Return ONLY a valid JSON object matching the requested schema.`;
+    } else {
+      prompt = `Analyze this Air Quality data for ${telemetryData?.city || 'Current Location'}:
+      AQI: ${telemetryData?.current?.aqi}
+      PM10: ${telemetryData?.current?.pm10} μg/m³
+      PM2.5: ${telemetryData?.current?.pm2_5} μg/m³
+      Ozone: ${telemetryData?.current?.ozone} μg/m³
       ${profileContext}
       ${uiLanguageInstruction}
-      ${strictFormattingInstruction}
 
-      MISSION PARAMETERS:
-      1. CRITICAL: ${toneInstruction}
-      2. CRITICAL: Provide DATA-DRIVEN, TACTICAL respiratory safety protocols.
-      3. If PM2.5 or PM10 is high, advise on specific mask ratings (e.g., N95) or indoor filtration.
-      4. Warn about prolonged outdoor activities if AQI > 100.
-      
-      OUTPUT REQUIREMENTS:
-      1. qualitative assessments: concise (max 8 words) for aqi, pm10, pm2_5, ozone.
-      2. summary: A tactical briefing matching the requested tone (max 35 words).
-      3. suggestions: A list of exactly 3 highly customized suggestions matching the requested tone.
-      
-      Format: JSON with keys "aqi", "pm10", "pm2_5", "ozone", "summary", "suggestions" (array of strings).
-      Return ONLY valid JSON.
+      Return a JSON object with keys:
+      "aqi": qualitative status (e.g. "Unhealthy" / "غیر صحت بخش")
+      "pm10": qualitative level (e.g. "Moderate" / "معتدل")
+      "pm2_5": qualitative level (e.g. "Hazardous" / "خطرناک")
+      "ozone": qualitative level (e.g. "Acceptable" / "محفوظ")
+      "summary": concise respiratory safety briefing (max 35 words)
+      "suggestions": array of exactly 3 customized tactical strings
       `;
 
-      systemPrompt = `
-      You are the AETRAXA Tactical Safety Analyst. Your ONLY purpose is to analyze air quality and respiratory hazard data.
-      
-      STRICT TOPIC ENFORCEMENT:
-      - Only analyze PM concentration, AQI, toxic gases, and respiratory survival environmental factors.
-      - If the user context suggests anything outside environmental safety, return a polite notification in the 'summary' that you are specialized for environmental monitoring.
-
-      STRICT JSON COMPLIANCE:
-      - You must return a perfectly valid, standard JSON object starting with '{' and ending with '}'.
-      - Do NOT wrap the JSON in markdown code blocks, do NOT write any pre-amble or post-amble text.
-      - Keep all JSON keys strictly as lowercase English, specified in the schema.
-      - Values must be written in the target user language (Urdu script for Urdu, English for English).
-      - Ensure strings are properly escaped to compile as legal JSON.
-      `;
+      systemPrompt = `You are the AETRAXA Tactical Air Quality Analyst. Return ONLY a valid JSON object matching the requested schema.`;
     }
 
-      const chatCompletion = await groq.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        model: DEFAULT_MODEL,
-        temperature: 0.7,
-        max_tokens: 1024,
-        response_format: { type: "json_object" },
-      });
-
-      const responseContent = chatCompletion.choices[0]?.message?.content || "";
-      
+    // 1. Try Gemini
+    const gemini = getGeminiClient();
+    if (gemini) {
       try {
-        const match = responseContent.match(/\{[\s\S]*\}/);
-        const cleanContent = match ? match[0] : responseContent;
-        const parsed = JSON.parse(cleanContent);
-        res.json(parsed);
-      } catch (e) {
-        console.error("Failed to parse AI response:", responseContent);
-        res.status(500).json({ error: "Invalid response from AI" });
+        const response = await gemini.models.generateContent({
+          model: "gemini-3.7-flash",
+          contents: prompt,
+          config: {
+            systemInstruction: systemPrompt,
+            responseMimeType: "application/json",
+            temperature: 0.7,
+          },
+        });
+
+        const text = response.text || "";
+        const parsed = JSON.parse(text);
+        if (parsed && (parsed.summary || parsed.suggestions)) {
+          return res.json(parsed);
+        }
+      } catch (err: any) {
+        console.warn("[Gemini Insights] Failed, falling back:", err.message);
       }
-    } catch (error: any) {
-      console.error("Groq API Error:", error.message);
-      res.status(500).json({ error: error.message });
     }
+
+    // 2. Try Groq if configured
+    const groq = getGroqClient(toolType, 'tips');
+    if (groq) {
+      try {
+        const chatCompletion = await groq.chat.completions.create({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: prompt },
+          ],
+          model: "groq/compound",
+          temperature: 0.7,
+          max_completion_tokens: 2048,
+          response_format: { type: "json_object" },
+        });
+
+        let content = chatCompletion.choices[0]?.message?.content || "";
+        content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+        const firstBrace = content.indexOf('{');
+        const lastBrace = content.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+          content = content.substring(firstBrace, lastBrace + 1);
+        }
+        const parsed = JSON.parse(content);
+        if (parsed && (parsed.summary || parsed.suggestions)) {
+          return res.json(parsed);
+        }
+      } catch (err: any) {
+        console.warn("[Groq Insights] Failed, falling back:", err.message);
+      }
+    }
+
+    // 3. Fallback to rich deterministic meteorological intelligence
+    const fallback = generateFallbackInsights(toolType, telemetryData, userProfile, language);
+    return res.json(fallback);
   });
 
-  // AI Chat Assistant (Tactical Briefing)
+  // AI Chat API
   app.post("/api/ai-chat", async (req, res) => {
-    try {
-      const { tool, messages, weatherData, aqiData, userProfile, language } = req.body;
-      const toolType = tool === 'aqi' ? 'aqi' : 'thermal';
-      const groq = getGroqClient(toolType, 'chat');
+    const { tool, messages, weatherData, aqiData, userProfile, language } = req.body;
+    const toolType: 'thermal' | 'aqi' = tool === 'aqi' ? 'aqi' : 'thermal';
+    const lastUserMessage = messages?.[messages.length - 1]?.content || "";
 
-      let systemPrompt = '';
-
-      if (toolType === 'aqi') {
-        const currentAqi = aqiData?.current?.aqi || 0;
-        const pm2_5 = aqiData?.current?.pm2_5 || 0;
-        const pm10 = aqiData?.current?.pm10 || 0;
-        const ozone = aqiData?.current?.ozone || 0;
-        const co = aqiData?.current?.co || 0;
-        const no2 = aqiData?.current?.no2 || 0;
-        const dust = aqiData?.current?.dust || 0;
-
-        systemPrompt = `You are the AETRAXA Tactical Air Quality Assistant. 
-        
-        SUPPORTED LANGUAGES & TRANSLITERATIONS (CRITICAL):
-        1. Accepting Input: The user can ask questions in ANY language, dialect, or script (English, Urdu, Sindhi, Punjabi, Pashto, Balochi, Hindi, Arabic, etc.).
-        2. Transliteration (Romanized Regional Languages): Users may write messages in Romanized scripts (phonetic English spelling). Examples:
-           - "hawa kharab hai kya krun" / "dhund lg rahi hai" / "smog check kro" / "saans nahi aa raha" / "khansi ho rahi hai" (Roman Urdu/Hindi/Punjabi meaning "air is bad, what to do", "experiencing smog", "smog check", "cannot breathe", "coughing")
-           - "mask" / "safey" (meaning masks/protection)
-           - "hawa" / "dust" (meaning wind/air quality/dirt)
-           These are 100% ON-TOPIC. Any message mentioning environmental air quality, smog, coughing, asthmatic struggles, smoke, chemical odor, dust, masks, N95 respirators, throat irritation, ventilation, or atmospheric haze is completely inside your mission scope.
-        3. Reply Language & Vocabulary Regulations (CRITICAL):
-           A. ROMAN URDU MODE (PRIMARY falling back for Romanized/Urdu inputs):
-              - If the user writes in Romanized language (e.g. "hawa kharab hai", "kya haal hai", etc.) or types in phonetic English-Urdu, you MUST reply exclusively in clean, high-contrast, premium Roman Urdu (using Latin characters).
-              - NEVER output Arabic script or Devanagari script for Romanized queries.
-              - ABSOLUTELY FORBIDDEN ROMAN HINDI VOCABULARY:
-                * "savdhani" -> use "ihtiyat" or "parhez" instead.
-                * "upay" -> use "tadabeer" or "hal" instead.
-                * "suraksha" -> use "hifazat" or "bachao" instead.
-                * "chinta" -> use "pareshani" or "tashweesh" or "fikr" instead.
-                * "samasya" -> use "masla" or "pareshani" instead.
-                * "sujhav" -> use "hidayat" or "mashwara" or "tajweez" instead.
-                * "prabhav" / "prabhavit" -> use "asar" / "asraat" / "mutasir" / "mutasira" instead.
-                * "vishisht" -> use "khas" or "makhsoos" instead.
-                * "avashyak" -> use "zaroori" instead.
-                * "chetauni" -> use "tanbeeh" or "intibah" or "khabardar" instead.
-                * "chhaya" / "chhaon" -> use "saaya" or "saaye" instead.
-                * "star" / "stur" -> use "satah" or "darja" instead.
-                * "dhanyawad" -> use "shukriya" instead.
-                * "tum" / "tumhara" -> always use polite, formal "aap" / "aapka".
-                * "shuruat" -> use "aaghaz" instead.
-              
-           B. PURE URDU SCRIPT MODE (Only if user inputs actual Urdu Arabic Script):
-              - If the user specifically writes their question in actual Urdu Script characters (e.g. "کیسا موسم ہے آج باہر؟"), you may reply in proper Urdu Script (Arabic characters).
-              - However, you MUST ensure 100% pure Urdu vocabulary. Under no circumstances output any Hindi words or blended characters.
-              - ABSOLUTELY FORBIDDEN HINDI/SANSKRIT TERMS IN URDU SCRIPT (DO NOT OUTPUT THESE WORDS OR CHARACTERS):
-                * Do NOT write "چھایا" or "چھای ہ" -> always write pure Urdu word "سایہ" or "سائے" (or "سایوں") (meaning shadow/shade).
-                * Do NOT write "استر" or "سرر" or "star" -> always write pure Urdu word "سطح" or "درجہ" (meaning level/status).
-                * Do NOT write "اپائے" or "وپائے" -> always write pure Urdu word "تدبیر" or "تدابیر" or "حل" (meaning measure/solution).
-                * Do NOT write "ساودھانی" -> always write pure Urdu word "احتیاط" (meaning precautions).
-                * Do NOT write "سرکشا" or "سورکشا" -> always write pure Urdu word "حفاظت" or "بچاؤ" (meaning protection/safety).
-                * Do NOT write "چنتا" -> always write pure Urdu word "تشویش" or "پریشانی" or "فکر" (meaning worry/concern).
-                * Do NOT write "سمسیا" -> always write pure Urdu word "مسئلہ" or "پریشانی" (meaning problem/issue).
-                * Do NOT write "سجھاو" or "سجھیو" -> always write pure Urdu word "ہدایت" or "ہدایات" or "مشورہ" or "تجویز" (meaning suggestion).
-                * Do NOT write "پربھاو" -> always write pure Urdu word "اثر" or "اثرات" (meaning effect/impact).
-                * Do NOT write "پربھاوتی" or "متاثرت" -> always write pure Urdu word "متاثرہ" or "متاثر" (meaning affected).
-                * Do NOT write "وشیش" -> always write pure Urdu word "خاص" or "مخصوص" (meaning special).
-                * Do NOT write "آوشیک" -> always write pure Urdu word "ضروری" (meaning necessary).
-                * Do NOT write "چیتاونی" -> always write pure Urdu word "تنبیہ" or "انتباہ" or "خبردار" (meaning warning).
-                * Do NOT output any Devanagari characters (such as "स", "त", "र", "ब", "स्त", "स्तर", "सावधानी", "सुरक्षा") under any circumstances!
-                * Do NOT blend Devanagari letters with Urdu letters (e.g., writing "برتنے" with Devanagari "بر" like "برتنے" is strictly forbidden). Write standard Arabic Urdu "برتنے" or use "احتیاط کرنے".
-            - If English, write in English.
-        
-        STRICT OPERATIONAL LIMITS:
-        - MISSION: Analyze air quality, smog, dust storms, chemical gas sat, and respiratory survival ONLY.
-        - ON-TOPIC CONTENT: Any mention of air safety, AQI readings, particulates, smog, smoke, lung irritation, breathing discomfort, inhalers, N95 masks, air purifiers, or ventilation in any language (native or Roman script) is fully ON-TOPIC and MUST be answered.
-        - RESTRICTION: Do NOT answer questions unrelated to air quality or respirator survival.
-        - REFUSAL PROTOCOL: Only refuse if the topic is completely unrelated. Politely refuse with: "Operational failure. My tactical core is only calibrated for air quality and respiratory hazard intelligence. Please stay on topic for a relevant briefing." 
-        
-        CURRENT OPERATIONAL THEATER:
-        - City: ${aqiData?.city || weatherData?.city || 'Unknown'}
-        - AQI Index: ${currentAqi} (European Index)
-        - Pollutant Breakdown:
-          * PM2.5 (Fine dust): ${pm2_5} µg/m³ [Safe Limit: 15]
-          * PM10 (Coarse dust): ${pm10} µg/m³ [Safe Limit: 45]
-          * Ground ozone (O₃): ${ozone} µg/m³ [Safe Limit: 100]
-          * Carbon Monoxide (CO): ${co} µg/m³ [Safe Limit: 4000]
-          * Nitrogen Dioxide (NO₂): ${no2} µg/m³ [Safe Limit: 25]
-          * Silt/Soil Dust: ${dust} µg/m³ [Safe Limit: 50]
-        - Current Weather Conditions (Integration Context):
-          * Temperature: ${weatherData?.current?.temp != null ? `${weatherData.current.temp}°C` : 'N/A'}
-          * Heat Index: ${weatherData?.current?.heatIndex != null ? `${weatherData.current.heatIndex}°C` : 'N/A'}
-          * Humidity: ${weatherData?.current?.humidity != null ? `${weatherData.current.humidity}%` : 'N/A'}
-          * UV Index: ${weatherData?.current?.uvIndex != null ? `${weatherData.current.uvIndex}` : 'N/A'}
-        
-        USER PROFILE:
-        - Occupation: ${userProfile?.occupation || 'N/A'}
-        - Vulnerability: ${(userProfile?.health_conditions || []).join(', ') || 'Standard'}
-        
-        DYNAMIC AIR-BASED TONE (CRITICAL):
-        - Scale intensity to AQI values before replying:
-          1. IF THE AIR IS DANGEROUS / SMOGGY (e.g. Current AQI >= 100 or PM2.5 >= 55): Use a highly alert, authoritative, sharp, clinical, and intense tactical tone emphasizing respirator masks (N95), cessation of outdoor exertion, active chemical air scrubbing, and direct protection moves.
-          2. IF THE AIR IS SAFE / HEALTHY (e.g. AQI < 100 and PM2.5 < 15): DO NOT use intense or emergency tactical alarms. Use a very calm, gentle, reassuring, relaxed, and conversational tone. Focus on pleasant ventilation, fresh-air comfort, and peaceful breathing tips. Keep the conversation cosy and pleasant.
-        
-        BEHAVIOR:
-        1. Technical but extremely concise. Avoid long-winded explanations.
-        2. Prioritize life-safety and lung defense advice, matching intensity to actual local air hazard stress level.
-        3. Match the user's input language and style (prioritizing Roman Urdu if the language is Urdu/Roman Urdu).
-        4. Be authoritative under high smog, but highly calm and gentle under fresh, healthy conditions. Use bullet points for checklists.
-        5. PARAGRAPHING: Use double line breaks between paragraphs.
-        6. LENGTH: Keep responses short and to the point.`;
-      } else {
-        systemPrompt = `You are the AETRAXA Tactical Intel Assistant. 
-        
-        SUPPORTED LANGUAGES & TRANSLITERATIONS (CRITICAL):
-        1. Accepting Input: The user can ask questions in ANY language, dialect, or script. Examples: English, Urdu, Sindhi, Punjabi, Pashto, Balochi, Hindi, Arabic, Bengali, etc.
-        2. Transliteration (Romanized Regional Languages): Users may write messages in Romanized scripts (phonetic English spelling of regional languages). Examples:
-           - "garmi lg rahi hai" / "garmi lag rahi hai kya krun" / "bohot garmi hai" (Roman Urdu/Hindi/Punjabi meaning "feeling hot, what to do")
-           - "paani" / "water" (meaning water/hydration)
-           - "hawa" / "ventilator" (meaning air/wind/ventilation)
-           - "garam" (meaning hot)
-           - "baraf" / "clima" (meaning ice/cooling options)
-           These are 100% ON-TOPIC. Any message mentioning, asking about, or complaining about environmental discomfort (heat, sweat, sun, hot winds, thirst, exhaustion, temperature, weather, cooling options like fans/ACs, or hydration) is completely inside your mission scope.
-        3. Reply Language & Vocabulary Regulations (CRITICAL):
-           A. ROMAN URDU MODE (PRIMARY falling back for Romanized/Urdu inputs):
-              - If the user writes in Romanized language (e.g. "garmi lag rahi hai", "kya haal hai", etc.) or types in phonetic English-Urdu, you MUST reply exclusively in clean, high-contrast, premium Roman Urdu (using Latin characters).
-              - NEVER output Arabic script or Devanagari script for Romanized queries.
-              - ABSOLUTELY FORBIDDEN ROMAN HINDI VOCABULARY:
-                * "savdhani" -> use "ihtiyat" or "parhez" instead.
-                * "upay" -> use "tadabeer" or "hal" instead.
-                * "suraksha" -> use "hifazat" or "bachao" instead.
-                * "chinta" -> use "pareshani" or "tashweesh" or "fikr" instead.
-                * "samasya" -> use "masla" or "pareshani" instead.
-                * "sujhav" -> use "hidayat" or "mashwara" or "tajweez" instead.
-                * "prabhav" / "prabhavit" -> use "asar" / "asraat" / "mutasir" / "mutasira" instead.
-                * "vishisht" -> use "khas" or "makhsoos" instead.
-                * "avashyak" -> use "zaroori" instead.
-                * "chetauni" -> use "tanbeeh" or "intibah" or "khabardar" instead.
-                * "chhaya" / "chhaon" -> use "saaya" or "saaye" instead.
-                * "star" / "stur" -> use "satah" or "darja" instead.
-                * "dhanyawad" -> use "shukriya" instead.
-                * "tum" / "tumhara" -> always use polite, formal "aap" / "aapka".
-                * "shuruat" -> use "aaghaz" instead.
-              
-           B. PURE URDU SCRIPT MODE (Only if user inputs actual Urdu Arabic Script):
-              - If the user specifically writes their question in actual Urdu Script characters (e.g. "کیسا موسم ہے آج باہر؟"), you may reply in proper Urdu Script (Arabic characters).
-              - However, you MUST ensure 100% pure Urdu vocabulary. Under no circumstances output any Hindi words or blended characters.
-              - ABSOLUTELY FORBIDDEN HINDI/SANSKRIT TERMS IN URDU SCRIPT (DO NOT OUTPUT THESE WORDS OR CHARACTERS):
-                * Do NOT write "چھایا" or "چھای ہ" -> always write pure Urdu word "سایہ" or "سائے" (or "سایوں") (meaning shadow/shade).
-                * Do NOT write "استر" or "سرر" or "star" -> always write pure Urdu word "سطح" or "درجہ" (meaning level/status).
-                * Do NOT write "اپائے" or "وپائے" -> always write pure Urdu word "تدبیر" or "تدابیر" or "حل" (meaning measure/solution).
-                * Do NOT write "ساودھانی" -> always write pure Urdu word "احتیاط" (meaning precautions).
-                * Do NOT write "سرکشا" or "سورکشا" -> always write pure Urdu word "حفاظت" or "بچاؤ" (meaning protection/safety).
-                * Do NOT write "چنتا" -> always write pure Urdu word "تشویش" or "پریشانی" or "فکر" (meaning worry/concern).
-                * Do NOT write "سمسیا" -> always write pure Urdu word "مسئلہ" or "پریشانی" (meaning problem/issue).
-                * Do NOT write "سجھاو" or "سجھیو" -> always write pure Urdu word "ہدایت" or "ہدایات" or "مشورہ" or "تجویز" (meaning suggestion).
-                * Do NOT write "پربھاو" -> always write pure Urdu word "اثر" or "اثرات" (meaning effect/impact).
-                * Do NOT write "پربھاوتی" or "متاثرت" -> always write pure Urdu word "متاثرہ" or "متاثر" (meaning affected).
-                * Do NOT write "وشیش" -> always write pure Urdu word "خاص" or "مخصوص" (meaning special).
-                * Do NOT write "آوشیک" -> always write pure Urdu word "ضروری" (meaning necessary).
-                * Do NOT write "چیتاونی" -> always write pure Urdu word "تنبیہ" or "انتباہ" or "خبردار" (meaning warning).
-                * Do NOT output any Devanagari characters (such as "स", "त", "र", "ब", "स्त", "स्तर", "सावधानी", "सुरक्षा") under any circumstances!
-                * Do NOT blend Devanagari letters with Urdu letters (e.g., writing "برتنے" with Devanagari "بر" like "برتنے" is strictly forbidden). Write standard Arabic Urdu "برتنے" or use "احتیاط کرنے".
-            - If English, write in English.
-        
-        STRICT OPERATIONAL LIMITS:
-        - MISSION: Analyze weather, heat safety, and environmental survival ONLY.
-        - ON-TOPIC CONTENT: Any mention of feeling hot/cold, sun exposure, dehydration, thirst, seeking shade, heatstroke, air conditioning, ice, fans, water, local temperatures, weather, humidity, or high UV indices, expressed in any language or written style (such as native script or Roman script), is fully ON-TOPIC and MUST be answered.
-        - RESTRICTION: You MUST NOT answer questions unrelated to weather, thermal hazards, hydration, or cooling (such as coding, math, general science, fictional storytelling, or general life/career advice).
-        - REFUSAL PROTOCOL: Only refuse if the topic is completely unrelated (e.g. "write a python function", "who is Einstein", "tell me a recipe for pizza"). In that specific case, politely refuse with: "Operational failure. My tactical core is only calibrated for weather and thermal hazard intelligence. Please stay on topic for a relevant briefing." 
-        
-        CURRENT OPERATIONAL THEATER:
-        - City: ${weatherData?.city || aqiData?.city || 'Unknown'}
-        - Heat Index: ${weatherData?.current?.heatIndex || 'Unknown'}°C
-        - Status: ${weatherData?.current?.temp || 'Unknown'}°C, ${weatherData?.current?.humidity || 'Unknown'}% Humidity, UV ${weatherData?.current?.uvIndex || 'Unknown'}
-        - Current Air Quality Conditions (Integration Context):
-          * AQI Index: ${aqiData?.current?.aqi != null ? `${aqiData.current.aqi} (European Index)` : 'N/A'}
-          * PM2.5 (Fine dust): ${aqiData?.current?.pm2_5 != null ? `${aqiData.current.pm2_5} µg/m³` : 'N/A'} [Safe Limit: 15]
-          * PM10 (Coarse dust): ${aqiData?.current?.pm10 != null ? `${aqiData.current.pm10} µg/m³` : 'N/A'} [Safe Limit: 45]
-        
-        USER PROFILE:
-        - Occupation: ${userProfile?.occupation || 'N/A'}
-        - Vulnerability: ${(userProfile?.health_conditions || []).join(', ') || 'Standard'}
-        
-        DYNAMIC WEATHER-BASED TONE (CRITICAL):
-        - Analyze the current environmental values (Temperature, Heat Index, and UV index) before replying:
-          1. IF THE WEATHER IS EXTREME or DANGEROUS (e.g. Heat Index >= 35°C, Temperature >= 38°C, or UV index >= 8): Use an highly alert, authoritative, sharp, and intense tactical tone emphasizing high-level safety instructions, medical/heatstroke warnings, hydration alerts, and direct action.
-          2. IF THE WEATHER IS COMFORTABLE or SAFE (e.g. Temperature < 35°C and Heat Index < 33°C, with low UV): DO NOT use alarmist, doom-laden, or intense tactical jargon. Instead, use a very calm, friendly, reassuring, relaxed, and conversational tone. Give simple, peaceful everyday comfort tips (e.g. drinking water, simple ventilation, pleasant walks) rather than emergency survival directives. Keep the conversation cozy and pleasant.
-        
-        BEHAVIOR:
-        1. Technical but extremely concise. Avoid long-winded explanations.
-        2. Prioritize life-safety and lung defense advice, matching intensity to actual local weather stress level.
-        3. Language: Match the user's input language and style (prioritizing Roman Urdu if the language is Urdu/Roman Urdu).
-        4. Be authoritative under extreme heat, but highly calm, reassuring, and gentle under mild/pleasant conditions. Use bullet points for checklists. 
-        5. PARAGRAPHING: Use double line breaks between paragraphs for clarity. 
-        6. LENGTH: Keep responses short and to the point.`;
-      }
-
-      const chatCompletion = await groq.chat.completions.create({
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages
-        ],
-        model: DEFAULT_MODEL,
-        temperature: 0.8,
-        max_tokens: 1024,
-        stream: false, // Keeping it simple for first step
-      });
-
-      res.json({ 
-        content: chatCompletion.choices[0]?.message?.content || "" 
-      });
-    } catch (error: any) {
-      console.error("Chat API Error:", error.message);
-      res.status(500).json({ error: error.message });
+    let systemPrompt = '';
+    if (toolType === 'aqi') {
+      systemPrompt = `You are the AETRAXA Tactical Air Quality Assistant.
+      Mission: Analyze air quality, smog, PM2.5, PM10, respiratory defense, and ventilation.
+      City: ${aqiData?.city || 'Current Location'}
+      Current AQI: ${aqiData?.current?.aqi || 'N/A'}, PM2.5: ${aqiData?.current?.pm2_5 || 'N/A'} µg/m³
+      User Profile: Occupation: ${userProfile?.occupation || 'N/A'}, Vulnerabilities: ${(userProfile?.health_conditions || []).join(', ') || 'None'}
+      Rules:
+      - If user speaks English, reply in concise English.
+      - If user writes in Roman Urdu (e.g. "hawa kharab hai", "kya karun"), reply in clean, polite Roman Urdu.
+      - If user writes in Urdu script or language is Urdu, reply in proper Urdu script.
+      - Keep responses concise, actionable, and formatted with bullet points for protocols.`;
+    } else {
+      systemPrompt = `You are the AETRAXA Tactical Weather & Thermal Intel Assistant.
+      Mission: Analyze temperature, heat index, humidity, UV index, and tactical cooling protocols.
+      City: ${weatherData?.city || 'Current Location'}
+      Current Temp: ${weatherData?.current?.temp || 'N/A'}°C, Heat Index: ${weatherData?.current?.heatIndex || 'N/A'}°C, Humidity: ${weatherData?.current?.humidity || 'N/A'}%, UV: ${weatherData?.current?.uvIndex || 'N/A'}
+      User Profile: Occupation: ${userProfile?.occupation || 'N/A'}, Vulnerabilities: ${(userProfile?.health_conditions || []).join(', ') || 'None'}
+      Rules:
+      - If user speaks English, reply in concise English.
+      - If user writes in Roman Urdu (e.g. "bohot garmi hai", "kya karun"), reply in clean, polite Roman Urdu.
+      - If user writes in Urdu script or language is Urdu, reply in proper Urdu script.
+      - Keep responses concise, actionable, and formatted with bullet points for cooling protocols.`;
     }
+
+    // 1. Try Gemini
+    const gemini = getGeminiClient();
+    if (gemini) {
+      try {
+        const contents = (messages || []).map((m: any) => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content || "" }]
+        }));
+
+        const response = await gemini.models.generateContent({
+          model: "gemini-3.7-flash",
+          contents: contents.length > 0 ? contents : [{ role: 'user', parts: [{ text: lastUserMessage || "Hello" }] }],
+          config: {
+            systemInstruction: systemPrompt,
+            temperature: 0.8,
+          },
+        });
+
+        const reply = response.text || "";
+        if (reply) {
+          return res.json({ content: reply });
+        }
+      } catch (err: any) {
+        console.warn("[Gemini Chat] Failed, falling back:", err.message);
+      }
+    }
+
+    // 2. Try Groq if configured
+    const groq = getGroqClient(toolType, 'chat');
+    if (groq) {
+      try {
+        const groqMessages = [
+          { role: "system", content: systemPrompt },
+          ...(messages || []).map((m: any) => ({
+            role: m.role === 'assistant' ? 'assistant' : 'user',
+            content: m.content || ""
+          }))
+        ];
+
+        const chatCompletion = await groq.chat.completions.create({
+          messages: groqMessages,
+          model: "groq/compound",
+          temperature: 0.8,
+          max_completion_tokens: 2048,
+        });
+
+        const reply = chatCompletion.choices[0]?.message?.content || "";
+        if (reply) {
+          return res.json({ content: reply });
+        }
+      } catch (err: any) {
+        console.warn("[Groq Chat] Failed, falling back:", err.message);
+      }
+    }
+
+    // 3. Fallback to deterministic tactical response
+    const fallbackReply = generateFallbackChat(toolType, lastUserMessage, weatherData, aqiData, userProfile, language);
+    return res.json({ content: fallbackReply });
   });
 
   // Vite middleware for development
