@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Groq API Key Pool
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "compound-mini";
 
 function getGroqClient(tool: 'thermal' | 'aqi' = 'thermal', action: 'tips' | 'chat' = 'tips') {
   let key: string | undefined;
